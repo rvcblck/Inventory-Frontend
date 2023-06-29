@@ -1,0 +1,70 @@
+<mat-dialog-content class="d-flex justify-content-center">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h2 class="modal-title">Request Form</h2>
+    </div>
+    <div class="modal-header-space">&nbsp;</div>
+
+    <div class="w-100 d-flex justify-content-end mb-3">
+      <span class="text-secondary">Date:</span><span>&nbsp; {{ currentDate | date : 'longDate' }}</span>
+    </div>
+    <div class="requestor-details-container mb-3">
+      <div class="d-flex justify-content-between">
+        <h3 class="fw-bold">Requestor Details</h3>
+        <h3 class="fw-bold text-primary">Edit</h3>
+      </div>
+
+      <div>
+        <small class="text-secondary">Requestor Name/Company: </small>
+        <span>{{ data.user.fname }} {{ data.user.mname }} {{ data.user.lname }} {{ data.user.suffix }}</span>
+      </div>
+      <div>
+        <small class="text-secondary">Delivery Address: </small>
+        <span>{{ data.user.address }}</span>
+      </div>
+      <div>
+        <small class="text-secondary">Contact #: </small>
+        <span>{{ data.user.contact_no }}</span>
+      </div>
+    </div>
+
+    <table class="table w-100 mb-5">
+      <thead>
+        <tr>
+          <th scope="col"></th>
+          <th scope="col">Item Name</th>
+          <th scope="col">Item</th>
+          <th scope="col">Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of data.cart; let i = index">
+          <th>{{ i + 1 }}</th>
+          <td>{{ item.item_name }}</td>
+          <td>{{ item.count }}</td>
+          <td>₱&nbsp;{{ item.totalPrice | number : '1.2-2' }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <hr class="w-100 dashed-hr" />
+    <div class="w-100 mb-5 d-flex justify-content-end fs-5 fw-bold" style="color: var(--green)">
+      Total : ₱ {{ calculateTotalAmount() | number : '1.2-2' }}
+    </div>
+
+    <div class="w-100">
+      <mat-form-field class="w-100">
+        <mat-label>Leave Message</mat-label>
+        <textarea tabindex="-1" matInput placeholder="Write here your message" [(ngModel)]="message"></textarea>
+      </mat-form-field>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions class="confirm-modal-action">
+  <div class="modal-footer">
+    <button class="btn-tertiary" [mat-dialog-close]="false" tabindex="-1">Cancel</button>
+
+    <button class="btn-primary" tabindex="-1" (click)="onSubmitConfirm()">Submit</button>
+  </div>
+</mat-dialog-actions>

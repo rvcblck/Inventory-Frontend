@@ -1,0 +1,72 @@
+<mat-dialog-content class="confirm-modal">
+  <h1 class="w-100 text-center">{{ data.inventory ? 'Update' : 'Add' }} Item</h1>
+  <form [formGroup]="inventoryForm" class="w-100 d-flex align-items-center flex-wrap" style="margin-top: 100px">
+    <div class="w-50 d-flex flex-column align-items-center">
+      <mat-form-field class="w-75">
+        <mat-label>Item Name</mat-label>
+        <input matInput type="text" formControlName="item_name" />
+      </mat-form-field>
+
+      <mat-form-field class="w-75">
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="item_description"></textarea>
+      </mat-form-field>
+
+      <mat-form-field class="w-75">
+        <mat-label>Price</mat-label>
+        <input matInput type="number" formControlName="item_price" />
+      </mat-form-field>
+
+      <mat-form-field class="w-75">
+        <mat-label>Quantity</mat-label>
+        <input matInput type="number" formControlName="item_quantity" />
+      </mat-form-field>
+
+      <mat-form-field class="w-75" *ngIf="categoryData">
+        <mat-label>Category</mat-label>
+        <mat-select formControlName="category_id">
+          <mat-option *ngFor="let item of categoryData" [value]="item.category_id">
+            {{ item.category }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="w-75" *ngIf="supplierData">
+        <mat-label>Supplier</mat-label>
+        <mat-select formControlName="supplier_id">
+          <mat-option *ngFor="let item of supplierData" [value]="item.id">
+            {{ item.company_name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="w-50 d-flex flex-column align-items-center">
+      <div class="image-preview-none" *ngIf="!selectedImage && !data.inventory">
+        <i class="fa-solid fa-images"></i>
+      </div>
+
+      <div class="image-preview" *ngIf="selectedImage && data.inventory">
+        <img [src]="selectedImage" alt="Preview" />
+      </div>
+
+      <div class="image-preview" *ngIf="selectedImage && !data.inventory">
+        <img [src]="selectedImage" alt="Preview" />
+      </div>
+
+      <div class="image-preview" *ngIf="!selectedImage && data.inventory"><img [src]="data.inventory.item_image_url" alt="Preview" /></div>
+      <div class="btn-primary">
+        <input type="file" (change)="onFileSelected($event)" accept="image/*" id="file-input" />
+        <label for="file-input"> Upload Item Image </label>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions class="confirm-modal-action">
+  <div class="footer">
+    <button class="btn-tertiary" [mat-dialog-close]="false" tabindex="-1">Cancel</button>
+
+    <button class="btn-primary" (click)="onSubmitConfirm()" tabindex="-1">Update</button>
+  </div>
+</mat-dialog-actions>

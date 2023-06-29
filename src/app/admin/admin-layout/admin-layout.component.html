@@ -1,0 +1,65 @@
+<div class="sidebar">
+  <div class="logo-details">
+    <i class="bx bxl-c-plus-plus icon"></i>
+    <div class="logo_name">Inventory</div>
+    <i class="fa-solid fa-bars" id="btn"></i>
+  </div>
+  <ul class="nav-list">
+    <li>
+      <a routerLink="/admin/dashboard">
+        <i class="fa-solid fa-house"></i>
+        <span class="links_name">Dashboard</span>
+      </a>
+      <span class="tooltip">Dashboard</span>
+    </li>
+    <li>
+      <a routerLink="/admin/request">
+        <i class="fa-solid fa-inbox"></i>
+        <span class="links_name">Requestor Request</span>
+      </a>
+      <span class="tooltip">Requestor Request</span>
+    </li>
+    <li>
+      <a routerLink="/admin/supplier-market">
+        <i class="fa-solid fa-store"></i>
+        <span class="links_name">Supplier Market</span>
+      </a>
+      <span class="tooltip">Supplier Market</span>
+    </li>
+    <li>
+      <a routerLink="/admin/inventory">
+        <i class="fa-solid fa-warehouse"></i>
+        <span class="links_name">Inventory</span>
+      </a>
+      <span class="tooltip">Inventory</span>
+    </li>
+    <li>
+      <a routerLink="/admin/delivery">
+        <i class="fa-solid fa-truck"></i>
+        <span class="links_name">Delivery History</span>
+      </a>
+      <span class="tooltip">Delivery History</span>
+    </li>
+    <li>
+      <a routerLink="/admin/accounts">
+        <i class="fa-solid fa-user"></i>
+        <span class="links_name">Accounts</span>
+      </a>
+      <span class="tooltip">Accounts</span>
+    </li>
+    <li class="profile">
+      <div class="profile-details">
+        <img src="{{ assetPath }}/image/default.jpg" alt="profileImg" />
+        <div class="name_job">
+          <div class="name">{{ name }}</div>
+          <div class="job">{{ role }}</div>
+        </div>
+      </div>
+
+      <i class="bx bx-log-out" id="log_out" (click)="logout()"></i>
+    </li>
+  </ul>
+</div>
+<section class="home-section">
+  <router-outlet></router-outlet>
+</section>

@@ -1,0 +1,37 @@
+::ng-deep .mat-mdc-text-field-wrapper,
+.mat-mdc-form-field-focus-overlay {
+  background-color: white !important;
+}
+
+::ng-deep .cdk-column-item_price {
+  color: var(--green);
+}
+
+::ng-deep .mat-mdc-row:nth-child(even) {
+  background-color: rgb(245, 245, 245) !important;
+}
+
+::ng-deep .mat-column-item_image img {
+  width: 50px;
+}
+
+.add-btn-container {
+  width: clamp(200px, 20%, 200px);
+}
+
+.table-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+::ng-deep .mat-mdc-header-cell {
+  font-weight: bold;
+}
+
+td img {
+  width: 50px;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  object-position: center;
+}

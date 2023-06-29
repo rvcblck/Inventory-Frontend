@@ -1,0 +1,13 @@
+<mat-dialog-content class="confirm-modal">
+  <h2 mat-dialog-title class="text-center">{{ data.header }}</h2>
+  <div class="text-center"><i class="fa-sharp fa-solid fa-circle-exclamation"></i></div>
+  <p class="text-center">{{ data.message }}</p>
+</mat-dialog-content>
+
+<mat-dialog-actions class="confirm-modal-action">
+  <div class="footer">
+    <button class="no" [mat-dialog-close]="false" tabindex="-1">No</button>
+
+    <button class="yes" [mat-dialog-close]="true" tabindex="-1">Yes</button>
+  </div>
+</mat-dialog-actions>

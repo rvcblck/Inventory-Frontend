@@ -1,0 +1,56 @@
+<mat-dialog-content class="confirm-modal">
+  <div class="order-container">
+    <div class="ps-5 pt-5" style="width: 60%">
+      <h1>
+        {{ data.viewOrder.requestor_name }} <small class="fw-light fs-6 text-secondary">({{ data.viewOrder.requestor_role }})</small>
+      </h1>
+      <div>
+        <small class="text-secondary w-100">Contact # : {{ data.viewOrder.requestor_contact_no }}</small>
+      </div>
+      <div>
+        <small>Address: {{ data.viewOrder.requestor_delivery_location }}</small>
+      </div>
+    </div>
+    <div class="d-flex justify-content-end flex-column pt-3" style="width: 40%">
+      <qrcode class="d-flex justify-content-center" [qrdata]="data.viewOrder.qr_code" [width]="200" [errorCorrectionLevel]="'M'"></qrcode>
+      <small class="text-center" style="margin-top: -20px">code : {{ data.viewOrder.qr_code }}</small>
+    </div>
+  </div>
+  <div class="w-100 px-5 d-flex justify-content-center">
+    <hr />
+  </div>
+
+  <div class="w-100 px-5 d-flex justify-content-center">
+    <!-- <h1 class="w-100 text-start m-0">Items</h1> -->
+    <table class="table w-75">
+      <tbody>
+        <tr *ngFor="let item of orderDataList">
+          <td>{{ item.item_name }}</td>
+          <td class="text-end">x{{ item.order_quantity }}</td>
+          <td class="text-end" style="max-width: 50px">₱{{ item.order_price | number : '1.2-2' }}</td>
+        </tr>
+        <tr class="border-top">
+          <td colspan="2" class="text-start fw-bold">Total</td>
+          <td class="text-end fw-bold">₱{{ totalPrice | number : '1.2-2' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="w-100 px-5">
+    <h5 class="border border-1">SENDER</h5>
+    <h5>
+      Name: {{ data.viewOrder.sender_name }} <small>({{ data.viewOrder.sender_role }})</small>
+    </h5>
+    <h5>Location: {{ data.viewOrder.sender_delivery_location }}</h5>
+    <h5>Contact #: {{ data.viewOrder.sender_contact_no }}</h5>
+    <h5>Date Release: {{ data.viewOrder.created_at | date : 'longDate' }} - {{ data.viewOrder.created_at | date : 'shortTime' }}</h5>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions class="confirm-modal-action">
+  <div class="footer">
+    <!-- <button class="no" [mat-dialog-close]="false" tabindex="-1">No</button> -->
+
+    <button class="yes" [mat-dialog-close]="true" tabindex="-1">Close</button>
+  </div>
+</mat-dialog-actions>
