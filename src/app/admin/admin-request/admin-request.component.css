@@ -44,3 +44,30 @@ td img {
   object-fit: cover;
   object-position: center;
 }
+
+::ng-deep .mat-mdc-row:nth-child(even) {
+  background-color: var(--light-grey) !important;
+}
+
+/* mat-mdc-row mdc-data-table__row cdk-row ng-star-inserted */
+
+::ng-deep .mat-mdc-row:nth-child(odd) {
+  background-color: white !important;
+}
+
+::ng-deep .mat-mdc-header-cell,
+::ng-deep .cdk-cell {
+  text-align: center !important;
+}
+
+::ng-deep .mat-mdc-header-row {
+  background-color: var(--accent-color) !important;
+}
+
+::ng-deep .mat-mdc-header-cell {
+  color: white !important;
+}
+
+::ng-deep .mdc-checkbox__native-control {
+  border-color: white !important;
+}

@@ -1,0 +1,11 @@
+#qr-shaded-region {
+  max-height: 80% !important;
+}
+
+#reader {
+  max-height: 80% !important;
+}
+
+#reader video {
+  max-height: 80% !important;
+}

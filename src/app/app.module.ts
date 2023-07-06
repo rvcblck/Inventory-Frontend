@@ -20,6 +20,11 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatIconModule } from '@angular/material/icon';
+import { MatRippleModule } from '@angular/material/core';
+import { DecimalPipe } from '@angular/common';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -50,6 +55,11 @@ import { SupplierLayoutComponent } from './supplier/supplier-layout/supplier-lay
 import { SupplierDashboardComponent } from './supplier/supplier-dashboard/supplier-dashboard.component';
 import { SupplierRequestComponent } from './supplier/supplier-request/supplier-request.component';
 import { SupplierDeliveryComponent } from './supplier/supplier-delivery/supplier-delivery.component';
+import { WarehouseOrdersComponent } from './warehouse/warehouse-orders/warehouse-orders.component';
+import { WarehouseSuppliesComponent } from './warehouse/warehouse-supplies/warehouse-supplies.component';
+import { WarehouseInventoryCountComponent } from './warehouse/warehouse-inventory-count/warehouse-inventory-count.component';
+import { SupplierFeedComponent } from './supplier/supplier-feed/supplier-feed.component';
+import { SupplierBiddingPagesComponent } from './supplier/supplier-bidding-pages/supplier-bidding-pages.component';
 
 @NgModule({
   declarations: [
@@ -80,7 +90,12 @@ import { SupplierDeliveryComponent } from './supplier/supplier-delivery/supplier
     SupplierLayoutComponent,
     SupplierDashboardComponent,
     SupplierRequestComponent,
-    SupplierDeliveryComponent
+    SupplierDeliveryComponent,
+    WarehouseOrdersComponent,
+    WarehouseSuppliesComponent,
+    WarehouseInventoryCountComponent,
+    SupplierFeedComponent,
+    SupplierBiddingPagesComponent
   ],
   imports: [
     BrowserModule,
@@ -102,7 +117,12 @@ import { SupplierDeliveryComponent } from './supplier/supplier-delivery/supplier
     MatTabsModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    QRCodeModule
+    QRCodeModule,
+    MatChipsModule,
+    MatAutocompleteModule,
+    MatIconModule,
+    MatRippleModule,
+    DecimalPipe
   ],
   providers: [CookieService, MatDialogConfig, DatePipe],
   bootstrap: [AppComponent]

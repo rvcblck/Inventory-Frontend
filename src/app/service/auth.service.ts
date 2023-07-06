@@ -39,8 +39,9 @@ export class AuthService {
           localStorage.setItem('name', response.data.name);
           localStorage.setItem('user_id', response.data.user_id);
           localStorage.setItem('admin_id', response.data.admin_id);
+          localStorage.setItem('company_id', response.data.companyInfo.company_id);
 
-          console.log(response.data);
+          console.log(response.data.role, 'pagkalogin');
 
           switch (response.data.role) {
             case 'Admin':
@@ -80,22 +81,25 @@ export class AuthService {
 
   isAdmin(): boolean {
     const role = this.cookieService.get('role');
-    console.log(role);
+    console.log(role, 'admin');
     return role === 'Admin';
   }
 
   isRequestor(): boolean {
     const role = this.cookieService.get('role');
+    console.log(role, 'requestor');
     return role === 'Requestor';
   }
 
   isWarehouse(): boolean {
     const role = this.cookieService.get('role');
+    console.log(role, 'warehouse');
     return role === 'Warehouse';
   }
 
   isSupplier(): boolean {
     const role = this.cookieService.get('role');
+    console.log(role, 'supplier');
     return role === 'Supplier';
   }
 }

@@ -8,53 +8,38 @@
     <div class="w-100 d-flex justify-content-end mb-3">
       <span class="text-secondary">Date:</span><span>&nbsp; {{ currentDate | date : 'longDate' }}</span>
     </div>
-    <div class="requestor-details-container mb-3">
-      <div class="d-flex justify-content-between">
-        <h3 class="fw-bold">Requestor Details</h3>
-        <h3 class="fw-bold text-primary">Edit</h3>
-      </div>
-
-      <div>
-        <small class="text-secondary">Requestor Name/Company: </small>
-        <span>{{ data.user.fname }} {{ data.user.mname }} {{ data.user.lname }} {{ data.user.suffix }}</span>
-      </div>
-      <div>
-        <small class="text-secondary">Delivery Address: </small>
-        <span>{{ data.user.address }}</span>
-      </div>
-      <div>
-        <small class="text-secondary">Contact #: </small>
-        <span>{{ data.user.contact_no }}</span>
-      </div>
-    </div>
 
     <table class="table w-100 mb-5">
       <thead>
         <tr>
           <th scope="col"></th>
-          <th scope="col">Item Name</th>
-          <th scope="col">Item</th>
-          <th scope="col">Price</th>
+          <th scope="col">ITEM NAME</th>
+          <th scope="col">QUANTITY</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let item of data.cart; let i = index">
           <th>{{ i + 1 }}</th>
           <td>{{ item.item_name }}</td>
-          <td>{{ item.count }}</td>
-          <td>₱&nbsp;{{ item.totalPrice | number : '1.2-2' }}</td>
+          <td>
+            {{ item.count }} <small class="text-secondary" style="font-size: 0.8rem">{{ item.unit.unit }}</small>
+          </td>
         </tr>
       </tbody>
     </table>
 
-    <hr class="w-100 dashed-hr" />
-    <div class="w-100 mb-5 d-flex justify-content-end fs-5 fw-bold" style="color: var(--green)">
-      Total : ₱ {{ calculateTotalAmount() | number : '1.2-2' }}
-    </div>
+    <!-- <hr class="w-100 dashed-hr" /> -->
+    <mat-form-field class="mb-4 w-100">
+      <mat-label>Date Needed (Optional)</mat-label>
+      <input matInput [matDatepicker]="picker" [(ngModel)]="dateNeeded" />
+      <mat-hint>MM/DD/YYYY</mat-hint>
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
 
     <div class="w-100">
       <mat-form-field class="w-100">
-        <mat-label>Leave Message</mat-label>
+        <mat-label>Leave Message (Optional)</mat-label>
         <textarea tabindex="-1" matInput placeholder="Write here your message" [(ngModel)]="message"></textarea>
       </mat-form-field>
     </div>

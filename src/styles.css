@@ -8,34 +8,35 @@ html,
 body {
   height: 100%;
   overflow: hidden;
+  margin: 0;
+  background-color: var(--background);
 }
 
 *:not(::ng-deep .mdc-checkbox__checkmark) {
   font-family: 'Poppins', sans-serif;
-  color: #393e46;
-}
-body {
-  margin: 0;
-  background-color: #f7f7f7;
+  color: var(--text);
 }
 
 :root {
-  --black: #393e46;
+  /* --black: #393e46;
   --green: #6d9886;
   --dirtyWhite: #f2e7d5;
   --white: #f7f7f7;
   --grey: rgb(214, 214, 214);
   --text: #def2e8;
-  --background: #030705;
+  --background: #030705; */
   /* --green: #35825c; */
   /* --green: #0d2117; */
-  --accent: #3d9469;
+  /* --accent: #3d9469; */
 
-  --text: #def2e8;
---background: #030705;
---primary-button: #35825c;
---secondary-button: #0d2117;
---accent: #3d9469;
+  --text: #1d1619;
+  --text-white: white;
+  --background: #f7f8ff;
+  --primary-color: #0b2447;
+  --secondary-color: #ced3da;
+  --danger-color: #e37d7d;
+  --accent-color: #ff961f;
+  --light-grey: #f3f3f3;
 }
 
 ::-webkit-scrollbar-track {
@@ -54,11 +55,16 @@ body {
   background-color: var(--grey);
 }
 
+.btn-primary i,
+.btn-secondar i {
+  color: white;
+}
+
 .btn-primary {
   width: clamp(100px, 98%, 200px);
   margin: 2%;
   border: none;
-  background-color: var(--green);
+  background-color: var(--primary-color);
   border-radius: 10px;
   padding: 15px 20px;
   font-size: 1rem;
@@ -69,21 +75,15 @@ body {
     rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
 }
 
-.btn-primary i,
-.btn-secondar i {
-  color: white;
-}
-
 .btn-secondary {
   width: clamp(100px, 98%, 200px);
   margin: 2%;
   border: none;
-  background-color: var(--black);
+  background-color: var(--secondary-color);
   border-radius: 10px;
   padding: 15px 20px;
   font-size: 1rem;
   white-space: nowrap;
-  color: white;
   text-align: center;
   box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px, rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px,
     rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
@@ -93,7 +93,7 @@ body {
   width: clamp(100px, 98%, 200px);
   margin: 2%;
   border: none;
-  background-color: white;
+  background-color: var(--secondary-button);
   border-radius: 10px;
   padding: 15px 20px;
   font-size: 1rem;
@@ -108,7 +108,7 @@ body {
   width: clamp(100px, 98%, 200px);
   margin: 2%;
   border: none;
-  background-color: rgb(212, 103, 103);
+  background-color: var(--danger-color);
   border-radius: 10px;
   padding: 15px 20px;
   font-size: 1rem;
@@ -122,15 +122,27 @@ body {
 .button-group {
   display: flex;
   flex-direction: row;
+  width: clamp(100px, 98%, 200px);
+}
+
+.plus {
+  border-radius: 0px 5px 5px 0px;
+  border: none;
+  background-color: var(--primary-color);
+  color: white;
+  aspect-ratio: 1/1;
+  padding: 5px 10px;
+  width: 20%;
 }
 
 .minus {
   border-radius: 5px 0px 0px 5px;
   border: none;
-  background-color: var(--black);
+  background-color: var(--primary-color);
   color: white;
   aspect-ratio: 1/1;
   padding: 5px 10px;
+  width: 20%;
 }
 
 .minus:hover,
@@ -138,23 +150,14 @@ body {
   transform: scale(1.1);
 }
 
-.plus {
-  border-radius: 0px 5px 5px 0px;
-  border: none;
-  background-color: var(--black);
-  color: white;
-  aspect-ratio: 1/1;
-  padding: 5px 10px;
-}
-
 .button-group .count {
-  /* aspect-ratio: 1/1; */
-  /* padding: 5px 10px; */
-  width: 50px;
+  width: 100px;
+  /* background-color: var(--secondary-color); */
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid var(--grey);
+  border: 1px solid var(--secondary-color);
+  width: 60%;
 }
 
 .toast-title {
@@ -200,6 +203,8 @@ body {
 #item_count {
   text-align: center;
 }
+
+/* modal css  */
 
 .confirm-modal-action {
   margin: 0;
@@ -248,7 +253,7 @@ body {
   justify-content: center;
 }
 .modal-header {
-  background-color: var(--black);
+  background-color: var(--primary-color);
   position: absolute;
   top: 0;
   left: 0;
@@ -288,8 +293,8 @@ body {
 }
 
 .modal-container {
-  width: 75%;
-  height: 80vh;
+  width: 90%;
+  height: min-content;
 }
 
 .main-page-admin {
@@ -298,6 +303,7 @@ body {
   border-radius: 20px;
   box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
   padding: 2%;
+  height: 100%;
 }
 
 /* for search bar  */
@@ -309,7 +315,7 @@ body {
   width: 150px;
   padding: 10px 0px 10px 40px;
   border-radius: 9999px;
-  border: solid 1px var(--grey);
+  border: solid 1px var(--primary-color);
   transition: all 0.2s ease-in-out;
   outline: none;
   opacity: 0.8;
@@ -360,7 +366,7 @@ input[type='checkbox'] {
   height: 20px;
   position: absolute;
   border-radius: 50%;
-  background-color: var(--green);
+  background-color: var(--primary-color);
   left: 15%;
   transform-origin: 50%;
   animation: circle7124 0.5s alternate infinite ease;

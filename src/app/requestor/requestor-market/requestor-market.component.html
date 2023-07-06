@@ -1,6 +1,6 @@
 <div class="main-container" *ngIf="filteredInventoryData">
   <div class="filter">
-    <h3>Category</h3>
+    <h3 class="category-title">Category</h3>
     <hr />
     <ul>
       <li *ngFor="let category of categoryData">
@@ -10,15 +10,17 @@
       </li>
     </ul>
     <br /><br />
-    <hr />
-    <h3>Sort By</h3>
+    <h3 class="category-title">Quantity</h3>
     <hr />
     <ul>
-      <li>Name</li>
-      <li>Sort 2</li>
-      <li>Sort 3</li>
-      <li>Sort 4</li>
+      <li>
+        <button class="category-toggle" (click)="toggleSortOrder('asc')" [class.active]="selectedSort === 'asc'">Smallest</button>
+      </li>
+      <li>
+        <button class="category-toggle" (click)="toggleSortOrder('desc')" [class.active]="selectedSort === 'desc'">Largest</button>
+      </li>
     </ul>
+    <br /><br />
   </div>
   <div class="product-list">
     <div class="product-list-header d-flex justify-content-between">
@@ -35,20 +37,26 @@
         <div class="item-img-container">
           <img [src]="item.item_image_url" alt="img" />
         </div>
-        <div class="name-price d-flex row mb-4">
-          <div class="item-name w-50">{{ item.item_name }}</div>
-          <div class="item-price w-50 text-end">{{ item.item_price | number : '1.2-2' }}</div>
+        <div class="name-price d-flex flex-row justify-content-between align-items-center justify-content-center mb-4">
+          <div class="item-name">{{ item.item_name }}</div>
+          <div class="bg-secondary rounded px-3 text-white">
+            <small>{{ item.unit.unit }}</small>
+          </div>
         </div>
-        <div class="item-description">{{ item.item_description }}</div>
-        <div class="quantity mb-4">
-          <div class="button-group mb-4">
+        <div class="d-flex mb-4 flex-row flex-nowrap">
+          <small class="text-secondary">Quantity : </small>
+          <div class="px-3 rounded text-center text-white ms-3" style="background-color: var(--accent-color)">{{ item.item_quantity }}</div>
+        </div>
+        <div class="item-description text-secondary mb-4">{{ item.item_description }}</div>
+        <div class="quantity d-flex flex-column align-items-center w-100 mb-2">
+          <div class="button-group">
             <button class="minus" (click)="decreaseCount(item)">-</button>
             <input type="text" id="item_count" class="count" [(ngModel)]="item.count" inputmode="numeric" (keydown)="onKeyDown($event)" />
             <button class="plus" (click)="increaseCount(item)">+</button>
           </div>
-          <div class="add-btn d-flex justify-content-center">
-            <button class="btn-primary" (click)="addToCart(item)"><i class="fa-solid fa-cart-shopping"></i>Add</button>
-          </div>
+        </div>
+        <div class="add-btn d-flex justify-content-center">
+          <button class="btn-primary" (click)="addToCart(item)"><i class="fa-solid fa-cart-shopping"></i>Add</button>
         </div>
       </div>
     </div>
@@ -59,21 +67,21 @@
     </div>
     <div class="request-list">
       <!-- sample  -->
-      <div class="request-item-container" *ngFor="let item of cartList">
+      <div class="request-item-container" *ngFor="let item of cartList" style="border-left: 5px solid var(--primary-color)">
         <div class="request-item">
           <div class="name-quantity">
             <div>{{ item.item_name }}</div>
             <div>x{{ item.count }}</div>
           </div>
-          <div class="request-item-price">{{ item.totalPrice | number : '1.2-2' }}</div>
         </div>
-        <div class="request-remove" (click)="removeItemFromCart(item)"><i class="fa-solid fa-circle-xmark"></i></div>
+        <div class="request-remove" (click)="removeItemFromCart(item)">
+          <i class="fa-solid fa-circle-xmark" style="color: var(--danger-color)"></i>
+        </div>
       </div>
     </div>
     <div class="request-footer d-flex flex-column align-items-center">
       <div class="w-100 mb-3 total-price d-flex justify-content-between px-3">
-        <span class="fs-5"> Total : ₱ {{ calculateTotalAmount() | number : '1.2-2' }}</span>
-        <span class="fs-6"> Item : {{ calculateTotalItems() }}</span>
+        <span class="fs-6 fw-bold"> ITEM : {{ cartList.length }}</span>
       </div>
       <button class="btn-primary" (click)="processRequest()">Process Request</button>
     </div>

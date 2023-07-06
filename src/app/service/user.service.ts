@@ -81,4 +81,16 @@ export class UserService {
       })
     );
   }
+
+  getRequestorCompanies() {
+    const headers = this.getHeaders();
+    return this.http.get<any>(`${this.apiUrl}/requestor-companies`, { headers }).pipe(
+      tap((response) => {
+        return response;
+      }),
+      catchError((error) => {
+        return throwError(error);
+      })
+    );
+  }
 }

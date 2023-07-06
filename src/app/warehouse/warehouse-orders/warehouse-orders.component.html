@@ -1,0 +1,92 @@
+<div class="main-page-admin">
+  <div class="tab-header mt-2">
+    <div class="container-input">
+      <input type="text" placeholder="Search item" name="text" class="input" [(ngModel)]="searchTerm" (input)="performSearch()" />
+      <i class="fa-solid fa-magnifying-glass"></i>
+    </div>
+    <div class="d-flex flex-row gap-2">
+      <mat-form-field>
+        <mat-label>Filter Date</mat-label>
+        <mat-select [(ngModel)]="dateFilter" (ngModelChange)="index()">
+          <mat-option value="this_day">This Day</mat-option>
+          <mat-option value="this_week">This Week</mat-option>
+          <mat-option value="this_month">This Month</mat-option>
+          <mat-option value="custom">Custom</mat-option>
+          <mat-option value="all">All</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field *ngIf="dateFilter === 'custom'">
+        <input matInput [matDatepicker]="fromDatePicker" placeholder="From Date" [(ngModel)]="customFromDate" (ngModelChange)="index()" />
+        <mat-datepicker-toggle matSuffix [for]="fromDatePicker"></mat-datepicker-toggle>
+        <mat-datepicker #fromDatePicker></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field *ngIf="dateFilter === 'custom'">
+        <input matInput [matDatepicker]="toDatePicker" placeholder="To Date" [(ngModel)]="customToDate" (ngModelChange)="index()" />
+        <mat-datepicker-toggle matSuffix [for]="toDatePicker"></mat-datepicker-toggle>
+        <mat-datepicker #toDatePicker></mat-datepicker>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="w-100 d-flex flex-row">
+    <div class="requestor-leftside w-25 overflow-auto py-5">
+      <ul>
+        <li
+          *ngFor="let row of completeOrderData"
+          class="requestor-data mb-3 me-3 shadow rounded px-4 py-2"
+          (click)="completeFilterOrderData(row.order_id)"
+          style="border-left: solid 10px var(--green)"
+        >
+          <!-- <div class="w-25 d-flex justify-content-center align-items-center">
+            <div class="request-image-container">
+              <img [src]="row.requestor_image" alt="" />
+            </div>
+          </div> -->
+          <div class="w-100 d-flex flex-column">
+            <small class="text-secondary">Order No.</small>
+            <h3 class="fw-bold fs-3 px-3">{{ row.order_number }}</h3>
+            <div class="d-flex flex-row justify-content-between">
+              <small class="text-secondary">items: {{ row.order_list.length }}</small>
+              <small class="text-secondary">{{ row.created_at | date : 'shortTime' }}</small>
+              <small class="text-secondary">{{ row.created_at | date : 'longDate' }}</small>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="w-75 p-3" *ngIf="filteredRequestItems.length">
+      <!-- show table of request_items here of the selected requestor -->
+      <table class="table rounded">
+        <thead>
+          <tr class="p-5">
+            <th class="text-center">Image</th>
+            <th class="text-center">Name</th>
+            <th class="text-center">Order Quantity</th>
+            <th class="text-center">Approved</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of filteredRequestItems">
+            <td class="text-center">
+              <img [src]="item.item_image_url" alt="" />
+            </td>
+            <td class="text-center">{{ item.item_name }}</td>
+            <td class="text-center">{{ item.order_quantity }}</td>
+            <td class="text-center">{{ item.order_price }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="d-flex justify-content-end">
+        <button class="btn-primary" (click)="releaseOrderConfirm()">Release Order</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="wrapper" *ngIf="loader">
+  <div class="circle"></div>
+  <div class="circle"></div>
+  <div class="circle"></div>
+  <div class="shadow-loader"></div>
+  <div class="shadow-loader"></div>
+  <div class="shadow-loader"></div>
+</div>

@@ -3,7 +3,7 @@
     <mat-tab label="Pending">
       <div class="tab-header mt-2">
         <div class="container-input">
-          <input type="text" placeholder="Search item" name="text" class="input" [(ngModel)]="searchTerm" (input)="performSearch()" />
+          <input type="text" placeholder="Search item" name="text" class="input" [(ngModel)]="searchTerm" (input)="performSearch('pending')" />
           <i class="fa-solid fa-magnifying-glass"></i>
         </div>
         <div class="d-flex flex-row gap-2">
@@ -18,14 +18,14 @@
             </mat-select>
           </mat-form-field>
           <mat-form-field *ngIf="dateFilter === 'custom'">
-            <input matInput [matDatepicker]="fromDatePicker" placeholder="From Date" [(ngModel)]="customFromDate" (ngModelChange)="index()" />
-            <mat-datepicker-toggle matSuffix [for]="fromDatePicker"></mat-datepicker-toggle>
-            <mat-datepicker #fromDatePicker></mat-datepicker>
-          </mat-form-field>
-          <mat-form-field *ngIf="dateFilter === 'custom'">
-            <input matInput [matDatepicker]="toDatePicker" placeholder="To Date" [(ngModel)]="customToDate" (ngModelChange)="index()" />
-            <mat-datepicker-toggle matSuffix [for]="toDatePicker"></mat-datepicker-toggle>
-            <mat-datepicker #toDatePicker></mat-datepicker>
+            <mat-label>Enter a date range</mat-label>
+            <mat-date-range-input [rangePicker]="picker">
+              <input matStartDate placeholder="Start date" [(ngModel)]="customFromDate" (ngModelChange)="index()" />
+              <input matEndDate placeholder="End date" [(ngModel)]="customToDate" (ngModelChange)="index()" />
+            </mat-date-range-input>
+            <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
           </mat-form-field>
         </div>
       </div>
@@ -34,25 +34,58 @@
         <div class="requestor-leftside w-25 overflow-auto py-5">
           <ul>
             <li
+              matRipple
               *ngFor="let row of pendingRequestData"
               class="requestor-data mb-3 me-3 shadow rounded px-4 py-2"
-              (click)="filterRequestData(row.request_id)"
+              (click)="pendingFilterRequestData(row.request_id)"
+              style="border-left: solid 10px var(--primary-color)"
             >
-              <div class="w-25 d-flex justify-content-center align-items-center">
-                <div class="request-image-container">
-                  <img [src]="row.requestor_image" alt="" />
+              <div class="w-100 d-flex flex-column">
+                <div class="d-flex justify-content-between">
+                  <small class="text-secondary">Request No.</small>
+                  <div class="mb-3">
+                    <img [src]="row.requestor_image" alt="" width="20px" style="border-radius: 50%" class="me-2" /><small class="text-secondary">{{
+                      row.requestor_name
+                    }}</small>
+                  </div>
                 </div>
-              </div>
-              <div class="w-75 d-flex flex-column ps-3">
-                <h3 class="fw-bold">{{ row.requestor_name }}</h3>
-                <small class="text-secondary">items: {{ row.item }}</small>
+                <h3 class="fw-bold fs-3 px-3">{{ row.request_number }}</h3>
+                <div class="d-flex flex-row justify-content-between">
+                  <small class="text-white px-2 rounded" style="background-color: var(--accent-color)">items: {{ row.request_list.length }}</small>
+                  <small class="text-secondary">{{ row.created_at | date : 'shortTime' }}</small>
+                  <small class="text-secondary">{{ row.created_at | date : 'longDate' }}</small>
+                </div>
               </div>
             </li>
           </ul>
         </div>
         <div class="w-75 p-3" *ngIf="filteredRequestItems.length">
+          <div class="py-3 px-2">
+            <div class="w-100 text-end mb-2 text-secondary" *ngIf="filteredRequestInfo.date_needed">
+              Date Needed :
+              <span class="px-3 text-white fw-bold rounded" style="background-color: var(--accent-color)">{{
+                filteredRequestInfo.date_needed | date : 'longDate'
+              }}</span>
+            </div>
+            <div class="d-flex flex-row gap-5">
+              <mat-form-field class="w-75" *ngIf="filteredRequestInfo.message">
+                <mat-label>Message :</mat-label>
+                <textarea matInput placeholder="Ex. It makes me feel..." [value]="filteredRequestInfo.message" disabled class="text-dark"></textarea>
+              </mat-form-field>
+              <div class="w-25">
+                <mat-form-field class="w-100">
+                  <mat-label>Transaction Type</mat-label>
+                  <mat-select [(ngModel)]="filteredRequestInfo.transaction_type">
+                    <mat-option value="Deliver">Deliver</mat-option>
+                    <mat-option value="Pick Up">Pick Up</mat-option>
+                    <mat-option value="Pick Up/Deliver">Pick Up / Deliver</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-error *ngIf="!filteredRequestInfo.transaction_type">This field is required</mat-error>
+              </div>
+            </div>
+          </div>
           <table mat-table [dataSource]="dataSource">
-            <!-- Checkbox Column -->
             <ng-container matColumnDef="select">
               <th mat-header-cell *matHeaderCellDef>
                 <mat-checkbox
@@ -74,7 +107,6 @@
               </td>
             </ng-container>
 
-            <!-- Item Image -->
             <ng-container matColumnDef="Image">
               <th mat-header-cell *matHeaderCellDef>Image</th>
               <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">
@@ -82,25 +114,23 @@
               </td>
             </ng-container>
 
-            <!-- Item Name -->
             <ng-container matColumnDef="Name">
               <th mat-header-cell *matHeaderCellDef>Name</th>
               <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">{{ element.item_name }}</td>
             </ng-container>
 
-            <!-- Stock Available -->
-            <ng-container matColumnDef="Stock Available">
+            <!-- <ng-container matColumnDef="Stock Available">
               <th mat-header-cell *matHeaderCellDef>Stock Available</th>
               <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">{{ element.item_quantity }}</td>
-            </ng-container>
+            </ng-container> -->
 
-            <!-- Request Quantity -->
             <ng-container matColumnDef="Request Quantity">
               <th mat-header-cell *matHeaderCellDef>Request Quantity</th>
-              <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">{{ element.request_quantity }}</td>
+              <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">
+                {{ element.request_quantity }}<span class="text-secondary ms-2" style="font-size: 0.8rem">{{ element.item_unit }}</span>
+              </td>
             </ng-container>
 
-            <!-- Approve Column -->
             <ng-container matColumnDef="Approve">
               <th mat-header-cell *matHeaderCellDef>Approve</th>
               <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">
@@ -141,7 +171,7 @@
           <div class="d-flex justify-content-end">
             <button
               mat-raised-button
-              (click)="declineOrderConfirm()"
+              (click)="declineRequestConfirm()"
               [class.btn-danger]="!hasError()"
               [class.btn-secondary]="hasError()"
               [disabled]="hasError()"
@@ -150,7 +180,7 @@
             </button>
             <button
               mat-raised-button
-              (click)="approveOrderConfirm()"
+              (click)="approveRequestConfirm()"
               [class.btn-primary]="!hasError()"
               [class.btn-secondary]="hasError()"
               [disabled]="hasError()"
@@ -161,17 +191,11 @@
         </div>
       </div>
     </mat-tab>
-    <!--
-
-
-    incomplete
-
-    -->
 
     <mat-tab label="Incomplete">
       <div class="tab-header mt-2">
         <div class="container-input">
-          <input type="text" placeholder="Search item" name="text" class="input" [(ngModel)]="searchTerm" (input)="performSearch()" />
+          <input type="text" placeholder="Search item" name="text" class="input" [(ngModel)]="searchTerm" (input)="performSearch('pending')" />
           <i class="fa-solid fa-magnifying-glass"></i>
         </div>
         <div class="d-flex flex-row gap-2">
@@ -202,24 +226,33 @@
         <div class="requestor-leftside w-25 overflow-auto py-5">
           <ul>
             <li
+              matRipple
               *ngFor="let row of incompleteRequestorData"
               class="requestor-data mb-3 me-3 shadow rounded px-4 py-2"
               (click)="incompleteFilterRequestData(row.request_id)"
+              style="border-left: solid 10px var(--primary-color)"
             >
-              <div class="w-25 d-flex justify-content-center align-items-center">
-                <div class="request-image-container">
-                  <img [src]="row.requestor_image" alt="" />
+              <div class="w-100 d-flex flex-column">
+                <div class="d-flex justify-content-between">
+                  <small class="text-secondary">Request No.</small>
+                  <div class="mb-3">
+                    <img [src]="row.requestor_image" alt="" width="20px" style="border-radius: 50%" class="me-2" /><small class="text-secondary">{{
+                      row.requestor_name
+                    }}</small>
+                  </div>
                 </div>
-              </div>
-              <div class="w-75 d-flex flex-column ps-3">
-                <h3 class="fw-bold">{{ row.requestor_name }}</h3>
-                <small class="text-secondary">items: {{ row.item }}</small>
+                <h3 class="fw-bold fs-3 px-3">{{ row.request_number }}</h3>
+                <div class="d-flex flex-row justify-content-between">
+                  <small class="text-white px-2 rounded" style="background-color: var(--accent-color)">items: {{ row.request_list.length }}</small>
+                  <small class="text-secondary">{{ row.created_at | date : 'shortTime' }}</small>
+                  <small class="text-secondary">{{ row.created_at | date : 'longDate' }}</small>
+                </div>
               </div>
             </li>
           </ul>
         </div>
         <div class="w-75 p-3" *ngIf="filteredRequestItems.length">
-          <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+          <table mat-table [dataSource]="dataSource">
             <ng-container matColumnDef="select">
               <th mat-header-cell *matHeaderCellDef>
                 <mat-checkbox
@@ -253,10 +286,10 @@
               <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">{{ element.item_name }}</td>
             </ng-container>
 
-            <ng-container matColumnDef="Stock Available">
+            <!-- <ng-container matColumnDef="Stock Available">
               <th mat-header-cell *matHeaderCellDef>Stock Available</th>
               <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">{{ element.item_quantity }}</td>
-            </ng-container>
+            </ng-container> -->
 
             <ng-container matColumnDef="Request Quantity">
               <th mat-header-cell *matHeaderCellDef>Request Quantity</th>
@@ -276,7 +309,7 @@
             </ng-container>
 
             <ng-container matColumnDef="Approve">
-              <th mat-header-cell *matHeaderCellDef>Approve</th>
+              <th mat-header-cell *matHeaderCellDef class="text-center">Approve</th>
               <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">
                 <div class="d-flex flex-row justify-content-around">
                   <mat-form-field class="example-full-width">
@@ -313,18 +346,9 @@
           </table>
 
           <div class="d-flex justify-content-end">
-            <!-- <button
-              mat-raised-button
-              (click)="declineOrderConfirm()"
-              [class.btn-danger]="!hasErrors()"
-              [class.btn-secondary]="hasErrors()"
-              [disabled]="hasErrors()"
-            >
-              Decline Order
-            </button> -->
             <button
               mat-raised-button
-              (click)="approveOrderConfirm()"
+              (click)="approveRequestConfirm()"
               [class.btn-primary]="!hasError()"
               [class.btn-secondary]="hasError()"
               [disabled]="hasError()"
@@ -338,7 +362,7 @@
     <mat-tab label="Complete">
       <div class="tab-header mt-2">
         <div class="container-input">
-          <input type="text" placeholder="Search item" name="text" class="input" [(ngModel)]="searchTerm" (input)="performSearch()" />
+          <input type="text" placeholder="Search item" name="text" class="input" [(ngModel)]="searchTerm" (input)="performSearch('pending')" />
           <i class="fa-solid fa-magnifying-glass"></i>
         </div>
         <div class="d-flex flex-row gap-2">
@@ -369,24 +393,32 @@
         <div class="requestor-leftside w-25 overflow-auto py-5">
           <ul>
             <li
+              matRipple
               *ngFor="let row of completeRequestorData"
               class="requestor-data mb-3 me-3 shadow rounded px-4 py-2"
               (click)="completeFilterRequestData(row.request_id)"
+              style="border-left: solid 10px var(--primary-color)"
             >
-              <div class="w-25 d-flex justify-content-center align-items-center">
-                <div class="request-image-container">
-                  <img [src]="row.requestor_image" alt="" />
+              <div class="w-100 d-flex flex-column">
+                <div class="d-flex justify-content-between">
+                  <small class="text-secondary">Request No.</small>
+                  <div class="mb-3">
+                    <img [src]="row.requestor_image" alt="" width="20px" style="border-radius: 50%" class="me-2" /><small class="text-secondary">{{
+                      row.requestor_name
+                    }}</small>
+                  </div>
                 </div>
-              </div>
-              <div class="w-75 d-flex flex-column ps-3">
-                <h3 class="fw-bold">{{ row.requestor_name }}</h3>
-                <small class="text-secondary">items: {{ row.item }}</small>
+                <h3 class="fw-bold fs-3 px-3">{{ row.request_number }}</h3>
+                <div class="d-flex flex-row justify-content-between">
+                  <small class="text-white px-2 rounded" style="background-color: var(--accent-color)">items: {{ row.request_list.length }}</small>
+                  <small class="text-secondary">{{ row.created_at | date : 'shortTime' }}</small>
+                  <small class="text-secondary">{{ row.created_at | date : 'longDate' }}</small>
+                </div>
               </div>
             </li>
           </ul>
         </div>
         <div class="w-75 p-3" *ngIf="filteredRequestItems.length">
-          <!-- show table of request_items here of the selected requestor -->
           <table class="table rounded">
             <thead>
               <tr class="p-5">
@@ -407,19 +439,331 @@
               </tr>
             </tbody>
           </table>
-          <div class="d-flex justify-content-end">
-            <!-- <button mat-raised-button class="btn-danger" (click)="declineOrder()">Decline Order</button>
-            <button mat-raised-button class="btn-primary" [class.btn-secondary]="hasErrors()" (click)="approveOrderConfirm( )" [disabled]="hasErrors()">
-              Approve Order
-            </button> -->
-          </div>
+          <div class="d-flex justify-content-end"></div>
         </div>
       </div>
     </mat-tab>
     <mat-tab label="Decline">
       <div class="tab-header mt-2">
         <div class="container-input">
-          <input type="text" placeholder="Search item" name="text" class="input" [(ngModel)]="searchTerm" (input)="performSearch()" />
+          <input type="text" placeholder="Search item" name="text" class="input" [(ngModel)]="searchTerm" (input)="performSearch('pending')" />
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+        <div class="d-flex flex-row gap-2">
+          <mat-form-field>
+            <mat-label>Filter Date</mat-label>
+            <mat-select [(ngModel)]="dateFilter" (ngModelChange)="index()">
+              <mat-option value="this_day">This Day</mat-option>
+              <mat-option value="this_week">This Week</mat-option>
+              <mat-option value="this_month">This Month</mat-option>
+              <mat-option value="custom">Custom</mat-option>
+              <mat-option value="all">All</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field *ngIf="dateFilter === 'custom'">
+            <input matInput [matDatepicker]="fromDatePicker" placeholder="From Date" [(ngModel)]="customFromDate" (ngModelChange)="index()" />
+            <mat-datepicker-toggle matSuffix [for]="fromDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #fromDatePicker></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field *ngIf="dateFilter === 'custom'">
+            <input matInput [matDatepicker]="toDatePicker" placeholder="To Date" [(ngModel)]="customToDate" (ngModelChange)="index()" />
+            <mat-datepicker-toggle matSuffix [for]="toDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #toDatePicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="w-100 d-flex flex-row">
+        <div class="requestor-leftside w-25 overflow-auto py-5">
+          <ul>
+            <li
+              matRipple
+              *ngFor="let row of declineRequestorData"
+              class="requestor-data mb-3 me-3 shadow rounded px-4 py-2"
+              (click)="declineFilterRequestData(row.request_id)"
+              style="border-left: solid 10px var(--primary-color)"
+            >
+              <div class="w-100 d-flex flex-column">
+                <div class="d-flex justify-content-between">
+                  <small class="text-secondary">Request No.</small>
+                  <div class="mb-3">
+                    <img [src]="row.requestor_image" alt="" width="20px" style="border-radius: 50%" class="me-2" /><small class="text-secondary">{{
+                      row.requestor_name
+                    }}</small>
+                  </div>
+                </div>
+                <h3 class="fw-bold fs-3 px-3">{{ row.request_number }}</h3>
+                <div class="d-flex flex-row justify-content-between">
+                  <small class="text-white px-2 rounded" style="background-color: var(--accent-color)">items: {{ row.request_list.length }}</small>
+                  <small class="text-secondary">{{ row.created_at | date : 'shortTime' }}</small>
+                  <small class="text-secondary">{{ row.created_at | date : 'longDate' }}</small>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="w-75 p-3" *ngIf="filteredRequestItems.length">
+          <table class="table rounded">
+            <thead>
+              <tr class="p-5">
+                <th class="text-center">Image</th>
+                <th class="text-center">Name</th>
+                <th class="text-center">Request Quantity</th>
+                <th class="text-center">Approved</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of filteredRequestItems">
+                <td class="text-center">
+                  <img [src]="item.item_image_url" alt="" width="50px" />
+                </td>
+                <td class="text-center">{{ item.item_name }}</td>
+                <td class="text-center">{{ item.request_quantity }}</td>
+                <td class="text-center">{{ item.request_approved }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="d-flex justify-content-end"></div>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+<!-- <div class="main-page-admin">
+  <mat-tab-group (selectedTabChange)="resetFilteredRequestItems()">
+    <mat-tab label="Pending">
+      <div class="tab-header mt-2">
+        <div class="container-input">
+          <input type="text" placeholder="Search item" name="text" class="input" [(ngModel)]="searchTerm" (input)="performSearch('pending')" />
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+        <div class="d-flex flex-row gap-2">
+          <mat-form-field>
+            <mat-label>Filter Date</mat-label>
+            <mat-select [(ngModel)]="dateFilter" (ngModelChange)="index()">
+              <mat-option value="this_day">This Day</mat-option>
+              <mat-option value="this_week">This Week</mat-option>
+              <mat-option value="this_month">This Month</mat-option>
+              <mat-option value="custom">Custom</mat-option>
+              <mat-option value="all">All</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field *ngIf="dateFilter === 'custom'">
+            <input matInput [matDatepicker]="fromDatePicker" placeholder="From Date" [(ngModel)]="customFromDate" (ngModelChange)="index()" />
+            <mat-datepicker-toggle matSuffix [for]="fromDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #fromDatePicker></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field *ngIf="dateFilter === 'custom'">
+            <input matInput [matDatepicker]="toDatePicker" placeholder="To Date" [(ngModel)]="customToDate" (ngModelChange)="index()" />
+            <mat-datepicker-toggle matSuffix [for]="toDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #toDatePicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="w-100 d-flex flex-row">
+        <div class="requestor-leftside w-25 overflow-auto py-5">
+          <ul>
+            <li
+              matRipple
+              *ngFor="let row of pendingRequestData"
+              class="requestor-data mb-3 me-3 shadow rounded px-4 py-2"
+              (click)="requestListData(row.request_id, 'pending')"
+              style="border-left: solid 10px var(--primary-color)"
+            >
+              <div class="w-100 d-flex flex-column">
+                <div class="d-flex justify-content-between">
+                  <small class="text-secondary">Request No.</small>
+                  <div class="mb-3">
+                    <img [src]="row.requestor_image" alt="" width="20px" style="border-radius: 50%" class="me-2" /><small class="text-secondary">{{
+                      row.requestor_name
+                    }}</small>
+                  </div>
+                </div>
+                <h3 class="fw-bold fs-3 px-3">{{ row.request_number }}</h3>
+                <div class="d-flex flex-row justify-content-between">
+                  <small class="text-white px-2 rounded" style="background-color: var(--accent-color)">items: {{ row.request_list.length }}</small>
+                  <small class="text-secondary">{{ row.created_at | date : 'shortTime' }}</small>
+                  <small class="text-secondary">{{ row.created_at | date : 'longDate' }}</small>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="w-75 p-3" *ngIf="filteredRequestItems.length">
+          <div class="py-3 px-2">
+            <div class="w-100 text-end mb-2 text-secondary" *ngIf="filteredRequestInfo.date_needed">
+              Date Needed :
+              <span class="px-3 text-white fw-bold rounded" style="background-color: var(--accent-color)">{{
+                filteredRequestInfo.date_needed | date : 'longDate'
+              }}</span>
+            </div>
+            <div *ngIf="filteredRequestInfo.message">
+              <mat-form-field class="w-100">
+                <mat-label>Message :</mat-label>
+                <textarea matInput placeholder="Ex. It makes me feel..." [value]="filteredRequestInfo.message" disabled class="text-dark"></textarea>
+              </mat-form-field>
+            </div>
+          </div>
+          <table mat-table [dataSource]="dataSource">
+            <ng-container matColumnDef="Image">
+              <th mat-header-cell *matHeaderCellDef>Image</th>
+              <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">
+                <img [src]="element.item_image_url" alt="" width="50px" />
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="Name">
+              <th mat-header-cell *matHeaderCellDef>Name</th>
+              <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">{{ element.item_name }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="Stock Available">
+              <th mat-header-cell *matHeaderCellDef>Stock Available</th>
+              <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">{{ element.item_quantity }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="Request Quantity">
+              <th mat-header-cell *matHeaderCellDef>Request Quantity</th>
+              <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">
+                {{ element.request_quantity }}&nbsp;<small class="text-secondary">{{ element.unit }}</small>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="Date Needed">
+              <th mat-header-cell *matHeaderCellDef>Date Needed</th>
+              <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">
+                {{ element.request_quantity }}&nbsp;<small class="text-secondary">{{ element.date_needed }}</small>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="selection.toggle(row)"></tr>
+          </table>
+
+          <div class="d-flex justify-content-end">
+            <button mat-raised-button (click)="declineRequestConfirm()" class="btn-danger">Decline Request</button>
+            <button mat-raised-button (click)="approveRequestConfirm()" class="btn-primary">Approve Request</button>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+    <mat-tab label="Approved">
+      <div class="tab-header mt-2">
+        <div class="container-input">
+          <input type="text" placeholder="Search item" name="text" class="input" [(ngModel)]="searchTerm" (input)="performSearch('approve')" />
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+        <div class="d-flex flex-row gap-2">
+          <mat-form-field>
+            <mat-label>Filter Date</mat-label>
+            <mat-select [(ngModel)]="dateFilter" (ngModelChange)="index()">
+              <mat-option value="this_day">This Day</mat-option>
+              <mat-option value="this_week">This Week</mat-option>
+              <mat-option value="this_month">This Month</mat-option>
+              <mat-option value="custom">Custom</mat-option>
+              <mat-option value="all">All</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field *ngIf="dateFilter === 'custom'">
+            <input matInput [matDatepicker]="fromDatePicker" placeholder="From Date" [(ngModel)]="customFromDate" (ngModelChange)="index()" />
+            <mat-datepicker-toggle matSuffix [for]="fromDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #fromDatePicker></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field *ngIf="dateFilter === 'custom'">
+            <input matInput [matDatepicker]="toDatePicker" placeholder="To Date" [(ngModel)]="customToDate" (ngModelChange)="index()" />
+            <mat-datepicker-toggle matSuffix [for]="toDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #toDatePicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="w-100 d-flex flex-row">
+        <div class="requestor-leftside w-25 overflow-auto py-5">
+          <ul>
+            <li
+              matRipple
+              *ngFor="let row of approveRequestorData"
+              class="requestor-data mb-3 me-3 shadow rounded px-4 py-2"
+              (click)="requestListData(row.request_id, 'approve')"
+              style="border-left: solid 10px var(--primary-color)"
+            >
+              <div class="w-100 d-flex flex-column">
+                <div class="d-flex justify-content-between">
+                  <small class="text-secondary">Request No.</small>
+                  <div class="mb-3">
+                    <img [src]="row.requestor_image" alt="" width="20px" style="border-radius: 50%" class="me-2" /><small class="text-secondary">{{
+                      row.requestor_name
+                    }}</small>
+                  </div>
+                </div>
+                <h3 class="fw-bold fs-3 px-3">{{ row.request_number }}</h3>
+                <div class="d-flex flex-row justify-content-between">
+                  <small class="text-white px-2 rounded" style="background-color: var(--accent-color)">items: {{ row.request_list.length }}</small>
+                  <small class="text-secondary">{{ row.created_at | date : 'shortTime' }}</small>
+                  <small class="text-secondary">{{ row.created_at | date : 'longDate' }}</small>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="w-75 p-3" *ngIf="filteredRequestItems.length">
+          <div class="py-3 px-2">
+            <div class="w-100 text-end mb-2 text-secondary" *ngIf="filteredRequestInfo.date_needed">
+              Date Needed :
+              <span class="px-3 text-white fw-bold rounded" style="background-color: var(--accent-color)">{{
+                filteredRequestInfo.date_needed | date : 'longDate'
+              }}</span>
+            </div>
+            <div *ngIf="filteredRequestInfo.message">
+              <mat-form-field class="w-100">
+                <mat-label>Message :</mat-label>
+                <textarea matInput placeholder="Ex. It makes me feel..." [value]="filteredRequestInfo.message" disabled class="text-dark"></textarea>
+              </mat-form-field>
+            </div>
+          </div>
+          <table mat-table [dataSource]="dataSource">
+            <ng-container matColumnDef="Image">
+              <th mat-header-cell *matHeaderCellDef>Image</th>
+              <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">
+                <img [src]="element.item_image_url" alt="" width="50px" />
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="Name">
+              <th mat-header-cell *matHeaderCellDef>Name</th>
+              <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">{{ element.item_name }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="Stock Available">
+              <th mat-header-cell *matHeaderCellDef>Stock Available</th>
+              <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">{{ element.item_quantity }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="Request Quantity">
+              <th mat-header-cell *matHeaderCellDef>Request Quantity</th>
+              <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">
+                {{ element.request_quantity }}&nbsp;<small class="text-secondary">{{ element.unit }}</small>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="Date Needed">
+              <th mat-header-cell *matHeaderCellDef>Date Needed</th>
+              <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">
+                {{ element.request_quantity }}&nbsp;<small class="text-secondary">{{ element.date_needed }}</small>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="selection.toggle(row)"></tr>
+          </table>
+        </div>
+      </div>
+    </mat-tab>
+    <mat-tab label="Decline">
+      <div class="tab-header mt-2">
+        <div class="container-input">
+          <input type="text" placeholder="Search item" name="text" class="input" [(ngModel)]="searchTerm" (input)="performSearch('decline')" />
           <i class="fa-solid fa-magnifying-glass"></i>
         </div>
         <div class="d-flex flex-row gap-2">
@@ -452,53 +796,83 @@
             <li
               *ngFor="let row of declineRequestorData"
               class="requestor-data mb-3 me-3 shadow rounded px-4 py-2"
-              (click)="declineFilterRequestData(row.request_id)"
+              (click)="requestListData(row.request_id, 'decline')"
+              style="border-left: solid 10px var(--primary-color)"
             >
-              <div class="w-25 d-flex justify-content-center align-items-center">
-                <div class="request-image-container">
-                  <img [src]="row.requestor_image" alt="" />
+              <div class="w-100 d-flex flex-column">
+                <div class="d-flex justify-content-between">
+                  <small class="text-secondary">Request No.</small>
+                  <div class="mb-3">
+                    <img [src]="row.requestor_image" alt="" width="20px" style="border-radius: 50%" class="me-2" /><small class="text-secondary">{{
+                      row.requestor_name
+                    }}</small>
+                  </div>
                 </div>
-              </div>
-              <div class="w-75 d-flex flex-column ps-3">
-                <h3 class="fw-bold">{{ row.requestor_name }}</h3>
-                <small class="text-secondary">items: {{ row.item }}</small>
+                <h3 class="fw-bold fs-3 px-3">{{ row.request_number }}</h3>
+                <div class="d-flex flex-row justify-content-between">
+                  <small class="text-white px-2 rounded" style="background-color: var(--accent-color)">items: {{ row.request_list.length }}</small>
+                  <small class="text-secondary">{{ row.created_at | date : 'shortTime' }}</small>
+                  <small class="text-secondary">{{ row.created_at | date : 'longDate' }}</small>
+                </div>
               </div>
             </li>
           </ul>
         </div>
         <div class="w-75 p-3" *ngIf="filteredRequestItems.length">
-          <!-- show table of request_items here of the selected requestor -->
-          <table class="table rounded">
-            <thead>
-              <tr class="p-5">
-                <th class="text-center">Image</th>
-                <th class="text-center">Name</th>
-                <th class="text-center">Request Quantity</th>
-                <th class="text-center">Approved</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let item of filteredRequestItems">
-                <td class="text-center">
-                  <img [src]="item.item_image_url" alt="" width="50px" />
-                </td>
-                <td class="text-center">{{ item.item_name }}</td>
-                <td class="text-center">{{ item.request_quantity }}</td>
-                <td class="text-center">{{ item.request_approved }}</td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="d-flex justify-content-end">
-            <!-- <button mat-raised-button class="btn-danger" (click)="declineOrder()">Decline Order</button>
-            <button mat-raised-button class="btn-primary" [class.btn-secondary]="hasErrors()" (click)="approveOrderConfirm( )" [disabled]="hasErrors()">
-              Approve Order
-            </button> -->
+          <div class="py-3 px-2">
+            <div class="w-100 text-end mb-2 text-secondary" *ngIf="filteredRequestInfo.date_needed">
+              Date Needed :
+              <span class="px-3 text-white fw-bold rounded" style="background-color: var(--accent-color)">{{
+                filteredRequestInfo.date_needed | date : 'longDate'
+              }}</span>
+            </div>
+            <div *ngIf="filteredRequestInfo.message">
+              <mat-form-field class="w-100">
+                <mat-label>Message :</mat-label>
+                <textarea matInput placeholder="Ex. It makes me feel..." [value]="filteredRequestInfo.message" disabled class="text-dark"></textarea>
+              </mat-form-field>
+            </div>
           </div>
+          <table mat-table [dataSource]="dataSource">
+            <ng-container matColumnDef="Image">
+              <th mat-header-cell *matHeaderCellDef>Image</th>
+              <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">
+                <img [src]="element.item_image_url" alt="" width="50px" />
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="Name">
+              <th mat-header-cell *matHeaderCellDef>Name</th>
+              <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">{{ element.item_name }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="Stock Available">
+              <th mat-header-cell *matHeaderCellDef>Stock Available</th>
+              <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">{{ element.item_quantity }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="Request Quantity">
+              <th mat-header-cell *matHeaderCellDef>Request Quantity</th>
+              <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">
+                {{ element.request_quantity }}&nbsp;<small class="text-secondary">{{ element.unit }}</small>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="Date Needed">
+              <th mat-header-cell *matHeaderCellDef>Date Needed</th>
+              <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">
+                {{ element.request_quantity }}&nbsp;<small class="text-secondary">{{ element.date_needed }}</small>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="selection.toggle(row)"></tr>
+          </table>
         </div>
       </div>
     </mat-tab>
   </mat-tab-group>
-</div>
+</div> -->
 <div class="wrapper" *ngIf="loader">
   <div class="circle"></div>
   <div class="circle"></div>

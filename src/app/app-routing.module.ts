@@ -24,6 +24,11 @@ import { SupplierLayoutComponent } from './supplier/supplier-layout/supplier-lay
 import { SupplierGuard } from './supplier.guard';
 import { SupplierRequestComponent } from './supplier/supplier-request/supplier-request.component';
 import { SupplierDeliveryComponent } from './supplier/supplier-delivery/supplier-delivery.component';
+import { WarehouseOrdersComponent } from './warehouse/warehouse-orders/warehouse-orders.component';
+import { WarehouseSuppliesComponent } from './warehouse/warehouse-supplies/warehouse-supplies.component';
+import { WarehouseInventoryCountComponent } from './warehouse/warehouse-inventory-count/warehouse-inventory-count.component';
+import { SupplierFeedComponent } from './supplier/supplier-feed/supplier-feed.component';
+import { SupplierBiddingPagesComponent } from './supplier/supplier-bidding-pages/supplier-bidding-pages.component';
 
 const routes: Routes = [
   {
@@ -184,6 +189,30 @@ const routes: Routes = [
         data: {
           title: 'Dashboard'
         }
+      },
+      {
+        path: 'orders',
+        component: WarehouseOrdersComponent,
+        canActivate: [WarehouseGuard],
+        data: {
+          title: 'Dashboard'
+        }
+      },
+      {
+        path: 'supplies',
+        component: WarehouseSuppliesComponent,
+        canActivate: [WarehouseGuard],
+        data: {
+          title: 'Dashboard'
+        }
+      },
+      {
+        path: 'inventory-count',
+        component: WarehouseInventoryCountComponent,
+        canActivate: [WarehouseGuard],
+        data: {
+          title: 'Dashboard'
+        }
       }
     ]
   },
@@ -209,6 +238,14 @@ const routes: Routes = [
         }
       },
       {
+        path: 'feed',
+        component: SupplierFeedComponent,
+        canActivate: [SupplierGuard],
+        data: {
+          title: 'Feed'
+        }
+      },
+      {
         path: 'request',
         component: SupplierRequestComponent,
         canActivate: [SupplierGuard],
@@ -222,6 +259,14 @@ const routes: Routes = [
         canActivate: [SupplierGuard],
         data: {
           title: 'Dashboard'
+        }
+      },
+      {
+        path: 'bidding-page',
+        component: SupplierBiddingPagesComponent,
+        canActivate: [SupplierGuard],
+        data: {
+          title: 'bidding page'
         }
       }
     ]

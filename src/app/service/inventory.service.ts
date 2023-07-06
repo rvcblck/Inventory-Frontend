@@ -12,6 +12,7 @@ export class InventoryService {
   private apiUrl = environment.apiUrl;
   private url = '/items';
   private urlCategory = '/category';
+  private urlGetInvetoryPerCompany = '/inventory-per-company';
 
   constructor(private http: HttpClient, private cookieService: CookieService, private router: Router) {}
 
@@ -86,6 +87,18 @@ export class InventoryService {
   indexCategory(): Observable<any> {
     const headers = this.getHeaders();
     return this.http.get<any>(`${this.apiUrl}${this.urlCategory}`, { headers }).pipe(
+      tap((response) => {
+        return response;
+      }),
+      catchError((error) => {
+        return throwError(error);
+      })
+    );
+  }
+
+  getInvetoryPerCompany(): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http.get<any>(`${this.apiUrl}${this.urlGetInvetoryPerCompany}`, { headers }).pipe(
       tap((response) => {
         return response;
       }),

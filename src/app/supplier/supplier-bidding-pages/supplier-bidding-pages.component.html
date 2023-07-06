@@ -1,0 +1,114 @@
+<div class="main-page-bidding">
+  <div class="header">
+    <div class="title p-3">
+      <div class="back-btn pb-5" (click)="back()">
+        <button><i class="fa-solid fa-chevron-left"></i></button>
+      </div>
+      <div class="d-flex flex-row align-items-center">
+        <div class="img-container">
+          <img [src]="orderData.logo_url" alt="" />
+        </div>
+        <h1 class="text-nowrap">{{ orderData.company_name }}</h1>
+      </div>
+      <div class="message"></div>
+    </div>
+  </div>
+  <div class="d-flex flex-row w-100 gap-5">
+    <div class="left-side">
+      <div class="list-items">
+        <h1 class="w-100 text-white text-center py-2" style="background-color: var(--primary-color)">Order Items</h1>
+        <div class="w-100 px-5">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+                <th scope="col">Price per item</th>
+                <th scope="col">Total price</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of orderData.order_list">
+                <td><img [src]="row.item_image_url" alt="" width="40px" /></td>
+                <td>{{ row.item_name }}</td>
+                <td>
+                  <span class="fs-4 me-2">{{ row.order_quantity }}</span>
+                  <small class="text-secondary px-2 rounded fw-light">{{ row.unit }}</small>
+                </td>
+                <td>
+                  <mat-form-field class="example-full-width my-2">
+                    <mat-label>Quantity</mat-label>
+                    <input
+                      inputmode="numeric"
+                      (keydown)="onKeyDown($event)"
+                      [ngModel]="row.price_per_item"
+                      matInput
+                      [ngModelOptions]="{ standalone: true }"
+                      (input)="onQuantityChange(row, $event)"
+                    />
+                  </mat-form-field>
+                  <mat-error *ngIf="!row.total_price"> This field is required </mat-error>
+                </td>
+                <td><span *ngIf="row.total_price">₱</span>{{ row.total_price | number : '1.2-2' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="total-price-container">
+          <div class="px-3 py-2">
+            <h1>Order Total Price :</h1>
+            <h1 class="px-3 py-1">₱ &nbsp;{{ orderData.order_total_price | number : '1.2' }}</h1>
+          </div>
+
+          <div class="py-2 px-2">
+            <button
+              matRipple
+              [class.bid-btn-primary]="!hasErrors()"
+              [class.bid-btn-secondary]="hasErrors()"
+              [disabled]="hasErrors()"
+              (click)="makeBidConfirm()"
+            >
+              <i class="fa-solid fa-check me-2"></i>Make a bid
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="right-side gap-3 d-flex flex-column">
+      <div class="order-info">
+        <h1 class="py-2">Order Information</h1>
+        <div class="p-3">
+          <div><span class="text-secondary">Date needed : </span></div>
+          <h4 class="ps-5">{{ orderData.date_needed | date : 'longDate' }}</h4>
+          <div><span class="text-secondary">Bidding started : </span></div>
+          <h4 class="ps-5">{{ orderData.bidding_start | date : 'longDate' }}</h4>
+          <div><span class="text-secondary">Delivery Location : </span></div>
+          <h4 class="ps-5">{{ orderData.delivery_location }}</h4>
+          <div><span class="text-secondary">Transaction Type : </span></div>
+          <h4 class="ps-5">{{ orderData.transaction_type }}</h4>
+        </div>
+      </div>
+      <div class="bidders">
+        <h1 class="w-100 text-white text-center py-2" style="background-color: var(--primary-color)">Other Bidders</h1>
+        <div class="px-5 py-3">
+          <ul class="list-group">
+            <li class="list-group-item border border-0 mb-2">
+              <span class="me-3"><img [src]="orderData.logo_url" alt="" /></span>{{ orderData.company_name }}<span></span>
+            </li>
+            <li class="list-group-item border border-0 mb-2">
+              <span class="me-3"><img [src]="orderData.logo_url" alt="" /></span>{{ orderData.company_name }}<span></span>
+            </li>
+            <li class="list-group-item border border-0 mb-2">
+              <span class="me-3"><img [src]="orderData.logo_url" alt="" /></span>{{ orderData.company_name }}<span></span>
+            </li>
+            <li class="list-group-item border border-0 mb-2">
+              <span class="me-3"><img [src]="orderData.logo_url" alt="" /></span>{{ orderData.company_name }}<span></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

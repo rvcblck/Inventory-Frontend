@@ -11,6 +11,8 @@ import { Observable, catchError, tap, throwError } from 'rxjs';
 export class RequestService {
   private apiUrl = environment.apiUrl;
   private url = '/request';
+  private urlRequestPerCompany = '';
+  private urlRequestPerCompanyFiltered = '/request-per-company-filtered';
 
   constructor(private http: HttpClient, private cookieService: CookieService, private router: Router) {}
 
@@ -85,6 +87,42 @@ export class RequestService {
   delete(id: string) {
     const headers = this.getHeaders();
     return this.http.delete<any>(`${this.apiUrl}${this.url}/${id}`, { headers }).pipe(
+      tap((response) => {
+        return response;
+      }),
+      catchError((error) => {
+        return throwError(error);
+      })
+    );
+  }
+
+  getRequestPerCompany(): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http.get<any>(`${this.apiUrl}/request-per-company`, { headers }).pipe(
+      tap((response) => {
+        return response;
+      }),
+      catchError((error) => {
+        return throwError(error);
+      })
+    );
+  }
+
+  getRequestPerCompanyFiltered(data: any): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http.post<any>(`${this.apiUrl}/request-per-company-filtered`, data, { headers }).pipe(
+      tap((response) => {
+        return response;
+      }),
+      catchError((error) => {
+        return throwError(error);
+      })
+    );
+  }
+
+  updateAdminChecked(formData: any, id: string) {
+    const headers = this.getHeaders();
+    return this.http.post<any>(`${this.apiUrl}/request-update-admin-check/${id}?_method=PUT`, formData, { headers }).pipe(
       tap((response) => {
         return response;
       }),

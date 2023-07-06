@@ -1,0 +1,110 @@
+.supplier-request-list {
+  background-color: white;
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+  margin-bottom: 20px;
+  border-radius: 20px;
+  padding: 20px;
+  position: relative;
+}
+.supplier-request-list .list-group-item img {
+  border-radius: 50%;
+  aspect-ratio: 1/1;
+}
+
+.supplier-request-list .request-list-header {
+  margin-bottom: 30px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.supplier-request-list .request-list-body {
+  margin-left: 50px;
+}
+
+.reqeust-list-img-container {
+  border-radius: 50%;
+  border: 2px solid var(--accent-color);
+  width: 50px;
+  height: 50px;
+  aspect-ratio: 1/1;
+  margin-right: 20px;
+}
+
+.reqeust-list-img-container img {
+  width: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 50%;
+  padding: 2px;
+}
+
+.request-list-section {
+  overflow: auto;
+  height: 80vh;
+  padding: 20px;
+}
+
+.bidders-count img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.more-items-message {
+  background-color: var(--accent-color);
+  border-radius: 10px;
+  width: min-content;
+  white-space: nowrap;
+  color: white;
+  font-size: 0.8rem;
+}
+
+.main-page-admin-supplier {
+  background-color: transparent;
+}
+
+.main-header {
+  margin: 0px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+  padding: 20px;
+  border-radius: 20px;
+}
+
+.filter-with-items {
+  background-color: white;
+  max-height: 80vh !important;
+  width: 100%;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+  overflow: auto;
+}
+
+.chipsItem {
+  background-color: var(--primary-color);
+  width: min-content;
+  color: white;
+  border-radius: 20px;
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+}
+
+.chipsItem button {
+  border: 1px solid white;
+  border-radius: 50%;
+  background-color: var(--accent-color);
+  width: 20px;
+  height: 20px;
+  font-size: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+

@@ -1,1 +1,37 @@
-<p>warehouse-layout works!</p>
+<nav>
+  <div class="logo fw-bold fs-3">LOGO</div>
+  <ul class="nav-link">
+    <li>
+      <a routerLink="/warehouse/dashboard" routerLinkActive="active-link">Dashboard</a>
+    </li>
+    <li>
+      <a routerLink="/warehouse/orders" routerLinkActive="active-link">Orders</a>
+    </li>
+    <li>
+      <a routerLink="/warehouse/supplies" routerLinkActive="active-link">Supplies</a>
+    </li>
+    <li>
+      <a routerLink="/warehouse/inventory-count" routerLinkActive="active-link">Inventory Count</a>
+    </li>
+  </ul>
+  <div class="profile">
+    <div>
+      <div style="line-height: 10px">{{ name }}</div>
+      <div class="text-center" style="font-size: 10px; line-height: 10px">{{ role }}</div>
+    </div>
+
+    <div class="dropdown">
+      <div class="img-container" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <img src="{{ assetPath }}images/user-sample.png" alt="img" />
+      </div>
+      <!-- <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"> Dropdown link </a> -->
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item">Profile</a></li>
+        <li><a class="dropdown-item" (click)="logout()">Logout</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<section class="home-section">
+  <router-outlet></router-outlet>
+</section>

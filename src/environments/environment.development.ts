@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:8000/api',
-  assetPath: '../../../assets/',
-  assetPath2: '../../../assets/'
+  apiUrl: 'https://inventory-backend.payjuan.com/api',
+  assetPath: 'https://invetory.payjuan.com/assets/',
+  assetPath2: 'https://invetory.payjuan.com/assets/'
 };

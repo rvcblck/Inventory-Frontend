@@ -18,6 +18,7 @@ export class ProcessRequestComponent implements OnInit {
   submitAttempted = false;
   currentDate!: string | null;
   message: string = '';
+  dateNeeded: any;
 
   constructor(
     public dialogRef: MatDialogRef<ProcessRequestComponent>,
@@ -66,12 +67,16 @@ export class ProcessRequestComponent implements OnInit {
   }
 
   onSubmit() {
-    const admin_id = localStorage.getItem('admin_id');
+    let date_needed = null;
+    if (this.dateNeeded) {
+      date_needed = this.dateNeeded.toLocaleString('en-US', { timeZone: 'Asia/Manila' });
+    }
+
     const requestData = {
       items: this.data.cart,
-      from: this.data.user.id, // from requestor
-      to: admin_id, // to admin
-      from_message: this.message
+      requestor_id: this.data.user.id, // from requestor
+      message: this.message,
+      date_needed: date_needed
     };
 
     console.log(requestData);

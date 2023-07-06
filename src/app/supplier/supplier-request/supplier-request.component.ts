@@ -39,6 +39,7 @@ export class SupplierRequestComponent implements OnInit, AfterViewInit {
   searchTerm: string = '';
   pendingRequestData!: any[];
   completeItems: any[] = [];
+  totalPrice: any;
 
   constructor(
     // private orderService: orderService,
@@ -202,7 +203,8 @@ export class SupplierRequestComponent implements OnInit, AfterViewInit {
         item_image_url: item ? item.item_image_url : '',
         request_approved: requestApproved,
         item_quantity: item ? item.item_quantity : '',
-        item_price: item ? item.item_price : ''
+        item_price: item ? item.item_price : '',
+        total_price: null
       };
     });
 
@@ -215,7 +217,7 @@ export class SupplierRequestComponent implements OnInit, AfterViewInit {
     console.log(this.filteredRequestItems);
     this.selection.clear();
     const newArrayOfItems = JSON.parse(JSON.stringify(this.filteredRequestItems));
-    this.displayedColumns = ['select', 'Image', 'Name', 'Stock Available', 'Request Quantity', 'Approve'];
+    this.displayedColumns = ['select', 'Image', 'Name', 'Request Quantity', 'Approve', 'Total Price'];
     this.dataSource = new MatTableDataSource(newArrayOfItems);
 
     this.dataSource.paginator = this.paginator;
@@ -237,7 +239,8 @@ export class SupplierRequestComponent implements OnInit, AfterViewInit {
           item_image_url: item ? item.item_image_url : '',
           request_approved: requestItem.request_disapproved,
           item_quantity: item ? item.item_quantity : '',
-          item_price: item ? item.item_price : ''
+          item_price: item ? item.item_price : '',
+          total_price: null
         };
       });
     this.selection.clear();
@@ -336,10 +339,17 @@ export class SupplierRequestComponent implements OnInit, AfterViewInit {
       item.request_approved = null;
     }
 
-    this.isError =
-      inputValue > item.request_quantity || inputValue > item.item_quantity || inputValue === 0 || inputValue === null || Number.isNaN(inputValue);
+    this.isError = inputValue > item.request_quantity || inputValue === 0 || inputValue === null || Number.isNaN(inputValue);
 
     console.log(this.isError);
+  }
+
+  onTotalPriceChange(item: any, event: any) {
+    const inputValue = parseInt(event.target.value);
+
+    this.isError = inputValue === null || Number.isNaN(inputValue);
+
+    console.log(inputValue, 'nadito');
   }
 
   onCheckboxChange(item: any) {
@@ -353,13 +363,6 @@ export class SupplierRequestComponent implements OnInit, AfterViewInit {
       }
     }
   }
-
-  // isAnyInputGreaterThanQuantity(): boolean {
-  //   return this.filteredRequestItems.some((item) => {
-  //     const inputValue = parseInt(item.request_approved);
-  //     return inputValue > item.request_quantity;
-  //   });
-  // }
 
   onKeyDown(event: KeyboardEvent): void {
     const allowedKeys = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete', 'Home', 'End'];
@@ -382,7 +385,7 @@ export class SupplierRequestComponent implements OnInit, AfterViewInit {
     }
 
     // console.log(this.filteredRequestItems);
-    return this.selection.selected.some((item) => item.request_approved > item.item_quantity || item.request_approved > item.request_quantity);
+    return this.selection.selected.some((item) => item.request_approved > item.request_quantity || item.total_price === null);
   }
 
   approveOrderConfirm() {
@@ -437,7 +440,8 @@ export class SupplierRequestComponent implements OnInit, AfterViewInit {
       data: orderItems,
       from: supplier_id, // order sender
       to: foundItem.from, // order receiver
-      qr_code: foundItem.qr_code
+      qr_code: foundItem.qr_code,
+      request_id: id
     };
 
     // computation

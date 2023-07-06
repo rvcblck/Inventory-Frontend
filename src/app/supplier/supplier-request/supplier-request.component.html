@@ -1,4 +1,4 @@
-<div class="main-page-admin">
+<!-- <div class="main-page-admin">
   <mat-tab-group (selectedTabChange)="resetFilteredRequestItems()">
     <mat-tab label="Pending">
       <div class="tab-header mt-2">
@@ -52,7 +52,6 @@
         </div>
         <div class="w-75 p-3" *ngIf="filteredRequestItems.length">
           <table mat-table [dataSource]="dataSource">
-            <!-- Checkbox Column -->
             <ng-container matColumnDef="select">
               <th mat-header-cell *matHeaderCellDef>
                 <mat-checkbox
@@ -74,7 +73,6 @@
               </td>
             </ng-container>
 
-            <!-- Item Image -->
             <ng-container matColumnDef="Image">
               <th mat-header-cell *matHeaderCellDef>Image</th>
               <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">
@@ -82,27 +80,18 @@
               </td>
             </ng-container>
 
-            <!-- Item Name -->
             <ng-container matColumnDef="Name">
               <th mat-header-cell *matHeaderCellDef>Name</th>
               <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">{{ element.item_name }}</td>
             </ng-container>
 
-            <!-- Stock Available -->
-            <ng-container matColumnDef="Stock Available">
-              <th mat-header-cell *matHeaderCellDef>Stock Available</th>
-              <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">{{ element.item_quantity }}</td>
-            </ng-container>
-
-            <!-- Request Quantity -->
             <ng-container matColumnDef="Request Quantity">
               <th mat-header-cell *matHeaderCellDef>Request Quantity</th>
               <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">{{ element.request_quantity }}</td>
             </ng-container>
 
-            <!-- Approve Column -->
             <ng-container matColumnDef="Approve">
-              <th mat-header-cell *matHeaderCellDef>Approve</th>
+              <th mat-header-cell *matHeaderCellDef class="text-center">Approve</th>
               <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">
                 <div class="d-flex flex-row justify-content-around">
                   <mat-form-field class="example-full-width my-2">
@@ -125,12 +114,29 @@
                     Approve All
                   </mat-checkbox>
                 </div>
-                <mat-error *ngIf="element.request_approved > element.item_quantity">
-                  Quantity cannot be greater than available stock {{ element.item_quantity }}
-                </mat-error>
                 <mat-error *ngIf="element.request_approved > element.request_quantity">
                   Quantity cannot be greater than {{ element.request_quantity }}
                 </mat-error>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="Total Price">
+              <th mat-header-cell *matHeaderCellDef class="text-center">Total Price</th>
+              <td mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">
+                <div class="d-flex flex-row justify-content-around">
+                  <mat-form-field class="example-full-width my-2">
+                    <mat-label>Total Price</mat-label>
+                    <input
+                      inputmode="numeric"
+                      (keydown)="onKeyDown($event)"
+                      [(ngModel)]="element.total_price"
+                      matInput
+                      [ngModelOptions]="{ standalone: true }"
+                      (input)="onTotalPriceChange(element, $event)"
+                    />
+                  </mat-form-field>
+                </div>
+                <mat-error *ngIf="!element.total_price"> Input The Total Price </mat-error>
               </td>
             </ng-container>
 
@@ -161,12 +167,6 @@
         </div>
       </div>
     </mat-tab>
-    <!--
-
-
-    incomplete
-
-    -->
 
     <mat-tab label="Incomplete">
       <div class="tab-header mt-2">
@@ -313,15 +313,6 @@
           </table>
 
           <div class="d-flex justify-content-end">
-            <!-- <button
-              mat-raised-button
-              (click)="declineOrderConfirm()"
-              [class.btn-danger]="!hasErrors()"
-              [class.btn-secondary]="hasErrors()"
-              [disabled]="hasErrors()"
-            >
-              Decline Order
-            </button> -->
             <button
               mat-raised-button
               (click)="approveOrderConfirm()"
@@ -386,7 +377,6 @@
           </ul>
         </div>
         <div class="w-75 p-3" *ngIf="filteredRequestItems.length">
-          <!-- show table of request_items here of the selected requestor -->
           <table class="table rounded">
             <thead>
               <tr class="p-5">
@@ -407,12 +397,7 @@
               </tr>
             </tbody>
           </table>
-          <div class="d-flex justify-content-end">
-            <!-- <button mat-raised-button class="btn-danger" (click)="declineOrder()">Decline Order</button>
-            <button mat-raised-button class="btn-primary" [class.btn-secondary]="hasErrors()" (click)="approveOrderConfirm( )" [disabled]="hasErrors()">
-              Approve Order
-            </button> -->
-          </div>
+          <div class="d-flex justify-content-end"></div>
         </div>
       </div>
     </mat-tab>
@@ -467,7 +452,6 @@
           </ul>
         </div>
         <div class="w-75 p-3" *ngIf="filteredRequestItems.length">
-          <!-- show table of request_items here of the selected requestor -->
           <table class="table rounded">
             <thead>
               <tr class="p-5">
@@ -488,16 +472,19 @@
               </tr>
             </tbody>
           </table>
-          <div class="d-flex justify-content-end">
-            <!-- <button mat-raised-button class="btn-danger" (click)="declineOrder()">Decline Order</button>
-            <button mat-raised-button class="btn-primary" [class.btn-secondary]="hasErrors()" (click)="approveOrderConfirm( )" [disabled]="hasErrors()">
-              Approve Order
-            </button> -->
-          </div>
+          <div class="d-flex justify-content-end"></div>
         </div>
       </div>
     </mat-tab>
   </mat-tab-group>
+</div> -->
+<div class="main-page-admin">
+  <div style="width: 30%"></div>
+  <div style="width: 70%">
+    <!-- header filter -->
+    <div></div>
+    <div></div>
+  </div>
 </div>
 <div class="wrapper" *ngIf="loader">
   <div class="circle"></div>

@@ -1,0 +1,8 @@
+<div class="main-page-admin d-flex flex-row align-items-center">
+  <div style="width: 40%; position: relative; height: 80%">
+    <div id="reader" width="600px" height="600px"></div>
+    <button *ngIf="!cameraId" (click)="requestCameraPermissions()">Request Camera Permissions</button>
+  </div>
+  <div id="reader" width="600px"></div>
+  <div style="width: 60%"></div>
+</div>

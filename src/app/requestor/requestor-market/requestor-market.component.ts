@@ -20,6 +20,7 @@ export class RequestorMarketComponent implements OnInit {
   filteredInventoryData!: any[];
   categoryData!: any;
   selectedCategory: string | null = null;
+  selectedSort: string | null = null;
   loader = true;
 
   constructor(private invetoryService: InventoryService, private dialog: MatDialog, private userService: UserService) {
@@ -32,11 +33,11 @@ export class RequestorMarketComponent implements OnInit {
   }
 
   index(): void {
-    forkJoin([this.invetoryService.index(), this.invetoryService.indexCategory()]).subscribe(
+    forkJoin([this.invetoryService.getInvetoryPerCompany(), this.invetoryService.indexCategory()]).subscribe(
       ([index, indexCategory]) => {
         this.inventoryData = index.data;
         this.filteredInventoryData = this.inventoryData;
-        this.inventoryData.forEach((item: { count: number }) => {
+        this.inventoryData.forEach((item: { count: any }) => {
           item.count = 0;
         });
 
@@ -62,12 +63,24 @@ export class RequestorMarketComponent implements OnInit {
   }
 
   increaseCount(item: any) {
-    item.count += 1;
+    let count = parseFloat(item.count);
+
+    count += 1;
+
+    item.count = count;
+
+    console.log(item.count, 'here');
   }
 
   decreaseCount(item: any) {
     if (item.count > 0) {
-      item.count -= 1;
+      let count = parseFloat(item.count);
+
+      count -= 1;
+
+      item.count = count;
+
+      // item.count -= 1;
     }
   }
 
@@ -75,8 +88,9 @@ export class RequestorMarketComponent implements OnInit {
     if (item.count === 0 || item.count === '') {
       return;
     }
+    console.log(item.count); // = 0.5
 
-    const count = parseInt(item.count);
+    const count = parseFloat(item.count); // = 0
 
     // Check if item_id is already in cart
     const existingItem = this.cartList.find((cartItem) => cartItem.item_id === item.item_id);
@@ -95,22 +109,6 @@ export class RequestorMarketComponent implements OnInit {
     item.count = 0;
   }
 
-  calculateTotalAmount(): number {
-    let totalAmount = 0;
-    for (const item of this.cartList) {
-      totalAmount += item.totalPrice;
-    }
-    return totalAmount;
-  }
-
-  calculateTotalItems(): number {
-    let totalItems = 0;
-    for (const item of this.cartList) {
-      totalItems += item.count;
-    }
-    return totalItems;
-  }
-
   removeItemFromCart(item: any): void {
     const index = this.cartList.indexOf(item);
     if (index !== -1) {
@@ -119,38 +117,80 @@ export class RequestorMarketComponent implements OnInit {
   }
 
   toggleCategory(categoryId: string): void {
+    this.searchTerm = '';
+
     if (this.selectedCategory === categoryId) {
       this.selectedCategory = null;
     } else {
       this.selectedCategory = categoryId;
     }
-    this.filterInventoryDataByCategory();
+    this.filterInventoryData();
   }
 
-  filterInventoryDataByCategory(): void {
-    if (this.selectedCategory === null) {
+  toggleSortOrder(sort: any) {
+    this.searchTerm = '';
+
+    if (this.selectedSort === sort) {
+      this.selectedSort = null;
+    } else {
+      this.selectedSort = sort;
+    }
+    this.filterInventoryData();
+  }
+
+  filterInventoryData(): void {
+    if (!this.selectedCategory && !this.selectedSort) {
       this.filteredInventoryData = this.inventoryData;
     } else {
-      this.filteredInventoryData = this.inventoryData.filter((item: any) => item.category_id === this.selectedCategory);
+      this.filteredInventoryData = this.inventoryData.filter((item: any) => {
+        const isCategoryMatch = !this.selectedCategory || item.category_id === this.selectedCategory;
+
+        return isCategoryMatch;
+      });
+
+      if (this.selectedSort) {
+        // Perform the sorting based on the selected sort order
+        this.filteredInventoryData.sort((a: any, b: any) => {
+          const quantityA = a.item_quantity;
+          const quantityB = b.item_quantity;
+
+          // Compare the quantities based on the selected sort order
+          if (this.selectedSort === 'asc') {
+            return quantityA - quantityB;
+          } else {
+            return quantityB - quantityA;
+          }
+        });
+      }
     }
   }
 
   performSearch(): void {
     if (this.searchTerm.trim() === '') {
-      this.filterInventoryDataByCategory();
+      this.filterInventoryData();
+    } else if (this.selectedCategory) {
+      this.filteredInventoryData = this.inventoryData
+        .filter((item: any) => {
+          const isCategoryMatch = !this.selectedCategory || item.category_id === this.selectedCategory;
+          return isCategoryMatch;
+        })
+        .filter(
+          (item: any) =>
+            item.item_name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+            item.item_description.toLowerCase().includes(this.searchTerm.toLowerCase())
+        );
     } else {
       this.filteredInventoryData = this.inventoryData.filter(
         (item: any) =>
           item.item_name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
           item.item_description.toLowerCase().includes(this.searchTerm.toLowerCase())
       );
-      this.filterInventoryDataByCategory();
     }
   }
 
   onKeyDown(event: KeyboardEvent): void {
     const allowedKeys = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete', 'Home', 'End'];
-    const isNumericInput = /[0-9]/.test(event.key);
+    const isNumericInput = /^\d*\.?\d*$/.test(event.key) || event.key === '.'; // Allow decimal input
     const isAllowedKey = allowedKeys.includes(event.key);
     const isSpecialKeyCombination = event.ctrlKey || event.altKey || event.metaKey;
 
@@ -172,7 +212,7 @@ export class RequestorMarketComponent implements OnInit {
           this.loader = false;
           const dialogRef = this.dialog.open(ProcessRequestComponent, {
             data: { cart: this.cartList, user: response.data },
-            width: '70%'
+            width: '40%'
           });
           dialogRef.afterClosed().subscribe((result) => {
             if (result) {

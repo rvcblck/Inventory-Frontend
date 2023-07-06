@@ -11,6 +11,7 @@ import { Observable, catchError, tap, throwError } from 'rxjs';
 export class OrderService {
   private apiUrl = environment.apiUrl;
   private url = '/order';
+  private urlqrcode = '/order-qrcode';
 
   constructor(private http: HttpClient, private cookieService: CookieService, private router: Router) {}
 
@@ -85,6 +86,18 @@ export class OrderService {
   delete(id: string) {
     const headers = this.getHeaders();
     return this.http.delete<any>(`${this.apiUrl}${this.url}/${id}`, { headers }).pipe(
+      tap((response) => {
+        return response;
+      }),
+      catchError((error) => {
+        return throwError(error);
+      })
+    );
+  }
+
+  showOrderUsingQrcode(qrcode: string) {
+    const headers = this.getHeaders();
+    return this.http.get<any>(`${this.apiUrl}${this.urlqrcode}/${qrcode}`, { headers }).pipe(
       tap((response) => {
         return response;
       }),

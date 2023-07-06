@@ -33,6 +33,8 @@ export class AdminRequestComponent implements OnInit, AfterViewInit {
   completeRequestorData!: any;
   declineRequestorData!: any;
   selectedTabIndex: number = 0;
+  approveRequestorData!: any;
+  filteredRequestInfo!: any;
 
   filteredRequestItems: any[] = [];
   isError = false;
@@ -54,11 +56,18 @@ export class AdminRequestComponent implements OnInit, AfterViewInit {
 
   displayedColumns: string[] = [];
   displayedColumns2: string[] = [];
+  displayedColumns3: string[] = [];
   dataSource!: MatTableDataSource<any>;
+  dataSource2!: MatTableDataSource<any>;
+  dataSource3!: MatTableDataSource<any>;
   selection = new SelectionModel<any>(true, []);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatPaginator) paginator2!: MatPaginator;
+  @ViewChild(MatPaginator) paginator3!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatSort) sort2!: MatSort;
+  @ViewChild(MatSort) sort3!: MatSort;
 
   isAllSelected() {
     // console.log(this.dataSource.data.length);
@@ -132,9 +141,9 @@ export class AdminRequestComponent implements OnInit, AfterViewInit {
 
     this.loader = true;
     forkJoin([
-      this.dateFilter != 'all' ? this.requestService.indexFiltered(data) : this.orderService.index(),
+      this.dateFilter != 'all' ? this.requestService.getRequestPerCompanyFiltered(data) : this.requestService.getRequestPerCompany(),
       this.userService.index(),
-      this.inventoryService.index()
+      this.inventoryService.getInvetoryPerCompany()
     ]).subscribe(
       ([request, users, inventory]) => {
         this.loader = false;
@@ -149,7 +158,9 @@ export class AdminRequestComponent implements OnInit, AfterViewInit {
         this.completeRequestorData = this.filterRequestorData(this.requestData, this.usersData, 'complete');
         this.declineRequestorData = this.filterRequestorData(this.requestData, this.usersData, 'decline');
 
-        console.log(this.requestData);
+        // this.approveRequestorData = this.filterRequestorData(this.requestData, this.usersData, 1);
+
+        console.log(this.completeRequestorData, 'eto');
       },
       (error) => {
         this.loader = false;
@@ -159,12 +170,11 @@ export class AdminRequestComponent implements OnInit, AfterViewInit {
   }
 
   filterRequestorData(requestData: any[], usersData: any[], status: string) {
-    const admin_id = localStorage.getItem('admin_id');
     const filteredData = requestData
       .map((item: any) => {
         const clonedItem = { ...item }; // Create a copy of the original object
 
-        const requestor = usersData.find((user: any) => user.id === item.from);
+        const requestor = usersData.find((user: any) => user.id === item.requestor_id);
         if (requestor) {
           clonedItem.requestor_name = `${requestor.fname} ${requestor.lname}`;
           clonedItem.requestor_image = requestor.profile_pic;
@@ -175,7 +185,9 @@ export class AdminRequestComponent implements OnInit, AfterViewInit {
 
         return clonedItem;
       })
-      .filter((user: any) => user.from !== admin_id);
+      .sort((a, b) => {
+        return a.request_number - b.request_number;
+      });
 
     const filteredDataWithItems = filteredData.filter((item: any) => item.request_list.length > 0);
 
@@ -184,12 +196,10 @@ export class AdminRequestComponent implements OnInit, AfterViewInit {
     return filteredDataWithItems;
   }
 
-  //shows the selected items of pending and approved complete
-  filterRequestData(request_id: number) {
-    // this.filteredRequestItems =
-    console.log(request_id, 'eto');
+  pendingFilterRequestData(request_id: number) {
     const filteredRequest = this.pendingRequestData.find((item: any) => item.request_id === request_id);
     this.filteredRequestItems = filteredRequest ? filteredRequest.request_list : [];
+    this.filteredRequestInfo = filteredRequest;
 
     this.filteredRequestItems = this.filteredRequestItems.map((requestItem) => {
       const item = this.inventoryData.find((inventoryItem: any) => inventoryItem.item_id === requestItem.item_id);
@@ -202,7 +212,8 @@ export class AdminRequestComponent implements OnInit, AfterViewInit {
         item_image_url: item ? item.item_image_url : '',
         request_approved: requestApproved,
         item_quantity: item ? item.item_quantity : '',
-        item_price: item ? item.item_price : ''
+        item_unit: item ? item.unit.unit : ''
+        // total_price: null
       };
     });
 
@@ -215,17 +226,89 @@ export class AdminRequestComponent implements OnInit, AfterViewInit {
     console.log(this.filteredRequestItems);
     this.selection.clear();
     const newArrayOfItems = JSON.parse(JSON.stringify(this.filteredRequestItems));
-    this.displayedColumns = ['select', 'Image', 'Name', 'Stock Available', 'Request Quantity', 'Approve'];
+    this.displayedColumns = ['select', 'Image', 'Name', 'Request Quantity', 'Approve'];
     this.dataSource = new MatTableDataSource(newArrayOfItems);
 
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
+
+  // filterRequestorData(requestData: any[], usersData: any[], status: any) {
+  //   const filteredData = requestData
+  //     .map((item: any) => {
+  //       const clonedItem = { ...item }; // Create a copy of the original object
+
+  //       const requestor = usersData.find((user: any) => user.id === item.requestor_id);
+  //       if (requestor) {
+  //         clonedItem.requestor_name = `${requestor.fname} ${requestor.lname}`;
+  //         clonedItem.requestor_image = requestor.profile_pic;
+  //       }
+
+  //       // clonedItem.request_list = item.request_list.filter((list: any) => list.status === status);
+  //       clonedItem.item = item.request_list.length;
+
+  //       return clonedItem;
+  //     })
+  //     .filter((item: any) => item.admin_checked === status)
+  //     .sort((a, b) => {
+  //       return a.request_number - b.request_number;
+  //     });
+
+  //   // const filteredDataWithItems = filteredData.filter((item: any) => item.request_list.length > 0);
+
+  //   return filteredData;
+  // }
+
+  // //shows the selected items of pending and approved complete
+  // requestListData(request_id: number, status: string) {
+  //   let filteredRequest: any;
+  //   switch (status) {
+  //     case 'pending':
+  //       filteredRequest = this.pendingRequestData.find((item: any) => item.request_id === request_id);
+  //       break;
+  //     case 'approve':
+  //       filteredRequest = this.approveRequestorData.find((item: any) => item.request_id === request_id);
+  //       break;
+  //     case 'decline':
+  //       filteredRequest = this.declineRequestorData.find((item: any) => item.request_id === request_id);
+  //       break;
+  //   }
+
+  //   this.filteredRequestInfo = filteredRequest;
+
+  //   this.filteredRequestItems = filteredRequest ? filteredRequest.request_list : [];
+
+  //   this.filteredRequestItems = this.filteredRequestItems.map((requestItem) => {
+  //     const item = this.inventoryData.find((inventoryItem: any) => inventoryItem.item_id === requestItem.item_id);
+
+  //     const requestApproved = requestItem.request_quantity;
+
+  //     return {
+  //       ...requestItem,
+  //       item_name: item ? item.item_name : '',
+  //       item_image_url: item ? item.item_image_url : '',
+  //       request_approved: requestApproved,
+  //       item_quantity: item ? item.item_quantity : '',
+  //       item_price: item ? item.item_price : ''
+  //     };
+  //   });
+
+  //   const newArrayOfItems = JSON.parse(JSON.stringify(this.filteredRequestItems));
+
+  //   console.log(newArrayOfItems);
+
+  //   this.displayedColumns = ['Image', 'Name', 'Stock Available', 'Request Quantity', 'Date Needed'];
+  //   this.dataSource = new MatTableDataSource(newArrayOfItems);
+
+  //   this.dataSource.paginator = this.paginator;
+  //   this.dataSource.sort = this.sort;
+  // }
+
   //shows the selected items of approved incomplete
   incompleteFilterRequestData(request_id: number) {
     const filteredRequest = this.incompleteRequestorData.find((item: any) => item.request_id === request_id);
     this.filteredRequestItems = filteredRequest ? filteredRequest.request_list : [];
-
+    this.filteredRequestInfo = filteredRequest;
     this.filteredRequestItems = this.filteredRequestItems
       .filter((requestItem) => requestItem.request_disapproved !== 0)
       .map((requestItem) => {
@@ -237,12 +320,12 @@ export class AdminRequestComponent implements OnInit, AfterViewInit {
           item_image_url: item ? item.item_image_url : '',
           request_approved: requestItem.request_disapproved,
           item_quantity: item ? item.item_quantity : '',
-          item_price: item ? item.item_price : ''
+          item_unit: item ? item.unit.unit : ''
         };
       });
     this.selection.clear();
     const newArrayOfItems = JSON.parse(JSON.stringify(this.filteredRequestItems));
-    this.displayedColumns2 = ['select', 'Image', 'Name', 'Stock Available', 'Request Quantity', 'Approved Items', 'Remaining Request', 'Approve'];
+    this.displayedColumns2 = ['select', 'Image', 'Name', 'Request Quantity', 'Approved Items', 'Remaining Request', 'Approve'];
     this.dataSource = new MatTableDataSource(newArrayOfItems);
 
     this.dataSource.paginator = this.paginator;
@@ -253,7 +336,7 @@ export class AdminRequestComponent implements OnInit, AfterViewInit {
   completeFilterRequestData(requestId: number) {
     const filteredRequest = this.completeRequestorData.find((item: any) => item.request_id === requestId);
     this.filteredRequestItems = filteredRequest ? filteredRequest.request_list : [];
-
+    this.filteredRequestInfo = filteredRequest;
     this.filteredRequestItems = this.filteredRequestItems
       .filter((requestItem) => requestItem.request_disapproved === 0)
       .map((requestItem) => {
@@ -267,16 +350,15 @@ export class AdminRequestComponent implements OnInit, AfterViewInit {
           item_image_url: item ? item.item_image_url : '',
           request_approved: quantityApproved === null ? requestItemQuantity : quantityApproved,
           item_quantity: item ? item.item_quantity : '',
-          item_price: item ? item.item_price : ''
+          item_unit: item ? item.unit.unit : ''
         };
       });
   }
 
   declineFilterRequestData(requestId: number) {
     const filteredRequest = this.declineRequestorData.find((item: any) => item.request_id === requestId);
-
     this.filteredRequestItems = filteredRequest ? filteredRequest.request_list : [];
-
+    this.filteredRequestInfo = filteredRequest;
     this.filteredRequestItems = this.filteredRequestItems
       // .filter((requestItem) => requestItem.request_disapproved === 0)
       .map((requestItem) => {
@@ -290,11 +372,10 @@ export class AdminRequestComponent implements OnInit, AfterViewInit {
           item_image_url: item ? item.item_image_url : '',
           request_approved: quantityApproved === null ? requestItemQuantity : quantityApproved,
           item_quantity: item ? item.item_quantity : '',
-          item_price: item ? item.item_price : ''
+          item_unit: item ? item.unit.unit : ''
         };
       })
       .sort((a, b) => {
-        // Sort by the 'updated_at' property in descending order
         if (a.updated_at > b.updated_at) {
           return -1;
         } else if (a.updated_at < b.updated_at) {
@@ -304,22 +385,54 @@ export class AdminRequestComponent implements OnInit, AfterViewInit {
       });
   }
 
-  performSearch() {
-    this.pendingRequestData = this.pendingRequestData.filter((requestor: { requestor: string }) =>
-      requestor.requestor.toLowerCase().includes(this.searchTerm.toLowerCase())
-    );
-
-    this.incompleteRequestorData = this.incompleteRequestorData.filter((requestor: { requestor: string }) =>
-      requestor.requestor.toLowerCase().includes(this.searchTerm.toLowerCase())
-    );
-
-    this.completeRequestorData = this.completeRequestorData.filter((requestor: { requestor: string }) =>
-      requestor.requestor.toLowerCase().includes(this.searchTerm.toLowerCase())
-    );
-
-    this.declineRequestorData = this.declineRequestorData.filter((requestor: { requestor: string }) =>
-      requestor.requestor.toLowerCase().includes(this.searchTerm.toLowerCase())
-    );
+  performSearch(status: string) {
+    if (this.searchTerm === '') {
+      switch (status) {
+        case 'pending':
+          this.pendingRequestData = this.filterRequestorData(this.requestData, this.usersData, 'pending');
+          break;
+        case 'complete':
+          this.completeRequestorData = this.filterRequestorData(this.requestData, this.usersData, 'complete');
+          break;
+        case 'incomplete':
+          this.incompleteRequestorData = this.filterRequestorData(this.requestData, this.usersData, 'incomplete');
+          break;
+        case 'decline':
+          this.declineRequestorData = this.filterRequestorData(this.requestData, this.usersData, 'decline');
+          break;
+      }
+    } else {
+      switch (status) {
+        case 'pending':
+          this.pendingRequestData = this.pendingRequestData.filter(
+            (item: any) =>
+              item.requestor_name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+              item.request_number.toString().includes(this.searchTerm.toString())
+          );
+          break;
+        case 'complete':
+          this.completeRequestorData = this.completeRequestorData.filter(
+            (item: any) =>
+              item.requestor_name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+              item.request_number.toString().includes(this.searchTerm.toString())
+          );
+          break;
+        case 'incomplete':
+          this.incompleteRequestorData = this.incompleteRequestorData.filter(
+            (item: any) =>
+              item.requestor_name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+              item.request_number.toString().includes(this.searchTerm.toString())
+          );
+          break;
+        case 'decline':
+          this.declineRequestorData = this.declineRequestorData.filter(
+            (item: any) =>
+              item.requestor_name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+              item.request_number.toString().includes(this.searchTerm.toString())
+          );
+          break;
+      }
+    }
   }
 
   resetFilteredRequestItems() {
@@ -329,7 +442,7 @@ export class AdminRequestComponent implements OnInit, AfterViewInit {
   }
 
   onQuantityChange(item: any, event: any) {
-    const inputValue = parseInt(event.target.value);
+    const inputValue = parseFloat(event.target.value);
     if (!isNaN(inputValue)) {
       item.request_approved = inputValue === item.request_quantity ? item.request_quantity : inputValue;
     } else {
@@ -353,17 +466,9 @@ export class AdminRequestComponent implements OnInit, AfterViewInit {
       }
     }
   }
-
-  // isAnyInputGreaterThanQuantity(): boolean {
-  //   return this.filteredRequestItems.some((item) => {
-  //     const inputValue = parseInt(item.request_approved);
-  //     return inputValue > item.request_quantity;
-  //   });
-  // }
-
   onKeyDown(event: KeyboardEvent): void {
     const allowedKeys = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete', 'Home', 'End'];
-    const isNumericInput = /[0-9]/.test(event.key);
+    const isNumericInput = /^\d*\.?\d*$/.test(event.key) || event.key === '.'; // Allow decimal input
     const isAllowedKey = allowedKeys.includes(event.key);
     const isSpecialKeyCombination = event.ctrlKey || event.altKey || event.metaKey;
 
@@ -381,13 +486,21 @@ export class AdminRequestComponent implements OnInit, AfterViewInit {
       return true;
     }
 
+    if (!this.filteredRequestInfo.transaction_type) {
+      return true;
+    }
+
     // console.log(this.filteredRequestItems);
     return this.selection.selected.some((item) => item.request_approved > item.item_quantity || item.request_approved > item.request_quantity);
   }
 
-  approveOrderConfirm() {
-    const message = `Are you sure you want to aprrove this item/s?`;
-    const header = `Confirm Approve`;
+  approveRequestConfirm() {
+    if (!this.filteredRequestInfo.transaction_type) {
+      return;
+    }
+
+    const message = `Are you sure you want to aprrove this request?`;
+    const header = `Approve Confirmation`;
     const dialogRef = this.dialog.open(ConfirmComponent, {
       width: '400px',
       data: {
@@ -399,14 +512,14 @@ export class AdminRequestComponent implements OnInit, AfterViewInit {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         // The user confirmed the action, submit the form
-        this.approveOrder();
+        this.approveRequest();
       }
     });
   }
 
-  declineOrderConfirm() {
-    const message = `Are you sure you want to decline this item/s?`;
-    const header = `Confirm Decline`;
+  declineRequestConfirm() {
+    const message = `Are you sure you want to decline this request?`;
+    const header = `Decline Confirmation`;
     const dialogRef = this.dialog.open(WarningComponent, {
       width: '400px',
       data: {
@@ -418,12 +531,68 @@ export class AdminRequestComponent implements OnInit, AfterViewInit {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         // The user confirmed the action, submit the form
-        this.declineOrder();
+        this.declineRequest();
       }
     });
   }
 
-  approveOrder() {
+  // approveRequest() {
+  //   if (!this.filteredRequestItems.length) {
+  //     return;
+  //   }
+
+  //   const id = this.filteredRequestItems[0].request_id;
+
+  //   const data = {
+  //     admin_checked: true,
+  //     bidding: true
+  //   };
+
+  //   console.log(data, id);
+
+  //   this.requestService.updateAdminChecked(data, id).subscribe(
+  //     (response) => {
+  //       this.loader = false;
+  //       this.index();
+  //       this.showSuccess();
+  //     },
+  //     (err) => {
+  //       this.loader = false;
+  //       this.showError();
+  //       console.log(err);
+  //     }
+  //   );
+  // }
+
+  // declineRequest() {
+  //   if (!this.filteredRequestItems.length) {
+  //     return;
+  //   }
+
+  //   const id = this.filteredRequestItems[0].request_id;
+
+  //   const data = {
+  //     admin_checked: false,
+  //     bidding: false
+  //   };
+
+  //   console.log(data, id);
+
+  //   this.requestService.updateAdminChecked(data, id).subscribe(
+  //     (response) => {
+  //       this.loader = false;
+  //       this.index();
+  //       this.showSuccess();
+  //     },
+  //     (err) => {
+  //       this.loader = false;
+  //       this.showError();
+  //       console.log(err);
+  //     }
+  //   );
+  // }
+
+  approveRequest() {
     if (!this.filteredRequestItems.length) {
       return;
     }
@@ -432,12 +601,11 @@ export class AdminRequestComponent implements OnInit, AfterViewInit {
 
     const newArrayOfItems = JSON.parse(JSON.stringify(this.selection.selected));
     const orderItems = JSON.parse(JSON.stringify(this.selection.selected));
-    const admin_id = localStorage.getItem('admin_id');
     const orderData = {
       data: orderItems,
-      from: admin_id, // order sender
-      to: foundItem.from, // order receiver
-      qr_code: foundItem.qr_code
+      request_id: id,
+      date_needed: foundItem.date_needed,
+      transaction_type: this.filteredRequestInfo.transaction_type
     };
 
     // computation
@@ -463,10 +631,12 @@ export class AdminRequestComponent implements OnInit, AfterViewInit {
 
     //for request udpate
     const data = {
-      data: newArrayOfItems
+      data: newArrayOfItems,
+      admin_checked: true,
+      bidding: true
     };
 
-    console.log(data, orderData);
+    console.log(orderData);
 
     this.loader = true;
     forkJoin([this.requestService.update(data, id), this.orderService.store(orderData)]).subscribe(
@@ -486,7 +656,7 @@ export class AdminRequestComponent implements OnInit, AfterViewInit {
     this.selection.clear();
   }
 
-  declineOrder() {
+  declineRequest() {
     if (!this.selection.selected.length) {
       // console.log('here');
       return;

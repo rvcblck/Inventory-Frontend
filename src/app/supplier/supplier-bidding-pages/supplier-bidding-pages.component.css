@@ -1,0 +1,192 @@
+.main-page-bidding {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 2% 5%;
+}
+
+.main-page-bidding .header {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.main-page-bidding .left-side {
+  width: 70%;
+  background-color: white;
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+  border-radius: 20px;
+  height: min-content;
+}
+
+.main-page-bidding .right-side {
+  width: 30%;
+  height: min-content;
+}
+
+.order-info {
+  background-color: white;
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+  border-radius: 20px;
+}
+
+.order-info h1 {
+  background-color: var(--primary-color);
+  border-radius: 20px 20px 0px 0px;
+  text-align: center;
+  margin: 0;
+  color: white;
+}
+
+.bidders {
+  background-color: white;
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+  border-radius: 20px;
+}
+
+.bidders h1 {
+  background-color: var(--primary-color);
+  border-radius: 20px 20px 0px 0px;
+  text-align: center;
+  margin: 0;
+  color: white;
+}
+
+.header .back-btn {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.header .back-btn button {
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  background-color: var(--primary-color);
+  border: none;
+  font-size: 30px;
+  color: white;
+  font-weight: bold;
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+}
+
+.header .title {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+}
+
+.header .title h1 {
+  margin: 0;
+  font-weight: bold;
+  margin-left: 20px;
+}
+
+.header .message {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.img-container {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid var(--accent-color);
+}
+
+.header .img-container img {
+  width: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.left-side h1 {
+  border-radius: 20px 20px 0 0;
+}
+
+.total-price-container {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.total-price-container div:nth-child(1) {
+  width: 75%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: var(--accent-color);
+  border-radius: 0px 10px 10px 20px;
+  align-items: center;
+}
+
+.total-price-container div:nth-child(1) h1:nth-child(1) {
+  color: white;
+  font-weight: 600;
+  margin: 0;
+}
+
+.total-price-container div:nth-child(1) h1:nth-child(2) {
+  background-color: white;
+  border-radius: 10px;
+  color: var(--primary-color);
+  font-weight: 600;
+  margin: 0;
+  border: none;
+  min-width: 200px;
+}
+
+.total-price-container div:nth-child(2) {
+  width: 25%;
+}
+
+.bid-btn-primary {
+  border-radius: 10px;
+  border: none;
+  width: 100%;
+  background-color: var(--primary-color);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  font-weight: 700;
+  height: 100%;
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+}
+
+.bid-btn-secondary {
+  border-radius: 10px;
+  border: none;
+  width: 100%;
+  background-color: var(--secondary-color);
+  color: var(--light-grey);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  font-weight: 700;
+  height: 100%;
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+}
+
+.bid-btn-primary i {
+  color: white;
+  font-size: 20px;
+}
+
+.bid-btn-primary:hover {
+  transform: scale(1.1);
+}
+
+.bidders img {
+  width: 30px;
+  border-radius: 50%;
+}
